@@ -1,0 +1,20 @@
+2022/01/01	Apple Juice	1 l	$3.99
+2022/01/05	Milk	2 l	$4.99
+2022/01/10	Orange Juice	500 ml	$2.49
+2022/01/15	Water	1.5 l	$1.99
+2022/01/20	Honey	500 g	$4.99
+2022/01/25	Sugar	2 kg	$2.99
+2022/02/01	Flour	1 kg	$2.49
+2022/02/05	Coffee	250 g	$5.99
+2022/02/10	Tea	100 g	$3.99
+2022/02/15	Rice	5 kg	$9.99
+2022/02/20	Quinoa	2 kg	$6.99
+2022/03/01	Almond Milk	1 l	$3.49
+2022/03/05	Soy Milk	500 ml	$2.99
+2022/03/10	Oat Milk	1 l	$3.99
+2022/03/15	Cocoa Powder	250 g	$4.99
+2022/03/20	Granola	750 g	$5.99
+2022/03/25	Yogurt	200 g	$2.49
+2022/04/01	Fruit Juice	2 l	$4.99
+2022/04/05	Iced Tea	1.5 l	$2.99
+2022/04/10	Instant Coffee	100 g	$3.99
