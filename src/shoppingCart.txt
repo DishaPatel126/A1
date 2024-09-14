@@ -1,0 +1,4 @@
+Sugar	2 kg	2
+Flour	1 kg	2
+Coffee	250 g	5
+Tea	100 g	3

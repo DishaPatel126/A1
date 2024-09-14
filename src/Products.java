@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,8 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/*This class represents collection of products.
-It provides methods to load a list from a file and retrieve product by name.
+/*
+* This class represents collection of products.
+* It provides methods to load a list from a file and retrieve product by name.
 */
 public class Products{
 
@@ -21,12 +21,13 @@ public class Products{
     }
 
     //Method to load the product list from file
-    public void loadProductList(String filename){
-        try(BufferedReader br = new BufferedReader(new FileReader(filename))){
+    public int loadProductHistory(BufferedReader productStream){
+        int count = 0;
+        try{
             String line;
 
             //Reading each line from the file and splitting into parts
-            while((line = br.readLine()) != null){
+            while((line = productStream.readLine()) != null){
                 String[] parts = line.split("\t");
                 if(parts.length == 4){
                     //Extract the product date
@@ -39,14 +40,15 @@ public class Products{
                         continue;
                     }
                     String name = parts[1].toLowerCase();
-                    String size = parts[2];
+                    String size = parts[2].toLowerCase();
                     float price = Float.parseFloat(parts[3].substring(1)); //remove the dollar sign
 
                     //Create new Product object
                     Product product = new Product(date, name, size, price);
 
                     //Add product to the product list
-                    productList.put(name, product); //use product name as key
+                    productList.put(name, product);//use product name as key
+                    count++;
                 } else{
                     //Print error message if the line is not in correct format
                     System.out.println("Invalid product data "+line);
@@ -55,6 +57,7 @@ public class Products{
         } catch (IOException e){
             System.out.println("Error reading product list: "+e.getMessage());
         }
+        return count;
     }
 
     //Method to retrieve a product by name

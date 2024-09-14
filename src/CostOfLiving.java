@@ -8,18 +8,6 @@ public class CostOfLiving {
     public void CostOfLiving() {
     }
 
-    public int loadProductHistory( BufferedReader productStream ) {
-        return -1;
-    }
-
-    public int loadShoppingCard( BufferedReader cartStream ) {
-        return -1;
-    }
-
-    public float shoppingCardCost( int cartNumber, int year, int month ) {
-        return -1.0f;
-    }
-
     public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth ) {
         return null;
     }

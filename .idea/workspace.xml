@@ -5,11 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b166c12f-7a54-45b9-b281-277de64d3bc0" name="Changes" comment="created repository">
-      <change afterPath="$PROJECT_DIR$/src/CostOfLiving.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Products.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/productList.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/extra.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CostOfLiving.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CostOfLiving.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Products.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Products.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ShoppingCarts.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ShoppingCarts.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/productList.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/productList.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shoppingCart.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/shoppingCart.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,10 +55,11 @@
   "keyToString": {
     "Application.Main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "onboarding.tips.debug.path": "C:/Users/disha/IdeaProjects/A1/src/Main.java",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
+    "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

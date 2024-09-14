@@ -1,0 +1,178 @@
+//Method to calculate shopping cart cost
+    public float shoppingCartCost(int cartNumber, int year, int month) {
+
+        //Load the products and their quantities
+        Map<String, Map<String, Integer>> cart = carts.get(cartNumber);
+
+        float totalCost = 0.0f;
+
+        //Iterate over each product in cart
+        for (Map.Entry<String, Map<String, Integer>> entry : cart.entrySet()) {
+            String productName = entry.getKey();
+            Map<String, Integer> productSizes = entry.getValue();
+
+            //Finding the cost-effective packaging
+            Packaging bestPackaging = findBestPackaging(productName, productSizes, year, month);
+
+            if (bestPackaging == null) {
+                // If no packaging can meet the required quantity, return a negative value
+                return -1.0f;
+            }
+
+            //Calculate the cost of best packaging
+            float cost = calculateCost(bestPackaging, productSizes);
+
+            totalCost += cost;
+        }
+
+        return totalCost;
+    }
+
+    // Helper method to find the most cost-effective packaging for a product
+    private Packaging findBestPackaging(String productName, Map<String, Integer> productSizes, int year, int month) {
+        List<Packaging> packagingOptions = getPackagingOptions(productName);
+
+        Packaging bestPackaging = null;
+        float bestCostPerGram = Float.MAX_VALUE;
+
+        int totalQuantityNeeded = 0;
+        for (int quantity : productSizes.values()) {
+            totalQuantityNeeded += quantity;
+        }
+
+        for (Packaging packaging : packagingOptions) {
+            int packagingSize = Integer.parseInt(packaging.getSize());
+            float packagingCost = packaging.getCost();
+
+            // Calculate the cost per gram for this packaging
+            float costPerGram = packagingCost / packagingSize;
+
+            // Check if this packaging can meet the required quantity
+            if (packagingSize >= totalQuantityNeeded) {
+                // If this packaging is more cost-effective than the current best, update the best packaging
+                if (costPerGram < bestCostPerGram) {
+                    bestPackaging = packaging;
+                    bestCostPerGram = costPerGram;
+                }
+            } else {
+                // If this packaging is not enough, check if we can use multiple packages of the same size
+                int numPackagesNeeded = (int) Math.ceil((double) totalQuantityNeeded / packagingSize);
+                float totalCost = numPackagesNeeded * packagingCost;
+
+                // Calculate the cost per gram for this combination of packages
+                float totalCostPerGram = totalCost / totalQuantityNeeded;
+
+                // If this combination of packages is more cost-effective than the current best, update the best packaging
+                if (totalCostPerGram < bestCostPerGram) {
+                    bestPackaging = new Packaging(Integer.toString(packagingSize * numPackagesNeeded), totalCost);
+                    bestCostPerGram = totalCostPerGram;
+                }
+            }
+        }
+
+//        for (Map.Entry<String, Integer> sizeEntry : productSizes.entrySet()) {
+//            String size = sizeEntry.getKey();
+//            int quantityNeeded = sizeEntry.getValue();
+//
+//            for (Packaging packaging : packagingOptions) {
+//                int packagingSize = Integer.parseInt(packaging.getSize());
+//                float packagingCost = packaging.getCost();
+//
+//                // Calculate the cost per gram for this packaging
+//                float costPerGram = packagingCost / packagingSize;
+//
+//                // Check if this packaging can meet the required quantity
+//                if (packagingSize >= quantityNeeded) {
+//                    // If this packaging is more cost-effective than the current best, update the best packaging
+//                    if (costPerGram < bestCostPerGram) {
+//                        bestPackaging = packaging;
+//                        bestCostPerGram = costPerGram;
+//                    }
+//                } else {
+//                    // If this packaging is not enough, check if we can use multiple packages of the same size
+//                    int numPackagesNeeded = (int) Math.ceil((double) quantityNeeded / packagingSize);
+//                    float totalCost = numPackagesNeeded * packagingCost;
+//
+//                    //Calculate the cost per gram for this combination of packages
+//                    float totalCostPerGram = totalCost / quantityNeeded;
+//
+//                    // If this combination of packages is more cost-effective than the current best, update the best packaging
+//                    if (totalCostPerGram < bestCostPerGram) {
+//                        bestPackaging = new Packaging(Integer.toString(packagingSize * numPackagesNeeded), totalCost);
+//                        bestCostPerGram = totalCostPerGram;
+//                    }
+//                }
+//            }
+//        }
+        return bestPackaging;
+    }
+
+    private float calculateCost(Packaging packaging, Map<String, Integer> productSizes) {
+        int totalQuantityNeeded = 0;
+        for (int quantity : productSizes.values()) {
+            totalQuantityNeeded += quantity;
+        }
+
+        int packagingSize = Integer.parseInt(packaging.getSize()); //check out
+        float packagingCost = packaging.getCost();
+
+        int numPackagesNeeded = (int) Math.ceil((double) totalQuantityNeeded / packagingSize);
+
+        // Calculate the total cost
+        float totalCost = numPackagesNeeded * packagingCost;
+
+        return totalCost;
+    }
+
+    private List<Packaging> getPackagingOptions(String productName) {
+        List<Packaging> packagingOptions = new ArrayList<>();
+
+        try (BufferedReader productReader = new BufferedReader(new FileReader("src/productList.txt"))) {
+            String line;
+            while ((line = productReader.readLine()) != null) {
+                String[] parts = line.split("\t");
+                if (parts.length != 4) {
+                    System.out.println("Invalid product format: " + line);
+                    continue;
+                }
+
+                Date date;
+                try {
+                    date = new SimpleDateFormat("yyyy/MM/dd").parse(parts[0].trim());
+                } catch (ParseException e) {
+                    System.out.println("Invalid date format: " + parts[0]);
+                    continue;
+                }
+
+                String productNameFromFile = parts[1].trim().toLowerCase();
+                if (productNameFromFile.equals(productName)) {
+                    String size = parts[2].trim();
+                    float cost = Float.parseFloat(parts[3].trim());
+
+                    packagingOptions.add(new Packaging(size, cost));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading products file: " + e.getMessage());
+        }
+
+        return packagingOptions;
+    }
+
+    private class Packaging{
+        private String size; // in grams
+        private float cost; // per unit
+
+        public Packaging(String size, float cost) {
+            this.size = size;
+            this.cost = cost;
+        }
+
+        public String getSize() {
+            return size;
+        }
+
+        public float getCost() {
+            return cost;
+        }
+    }
