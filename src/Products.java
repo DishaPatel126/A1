@@ -1,68 +1,34 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
 * This class represents collection of products.
-* It provides methods to load a list from a file and retrieve product by name.
 */
 public class Products{
 
-    //Map to store products with product name as key
-    private Map<String, Product> productList;
-
+    CostOfLiving products = new CostOfLiving();
+    List<Product> productList = products.getProductList();
     //Constructor to initialise the product list
     public Products(){
-        this.productList = new HashMap<>();
-    }
-
-    //Method to load the product list from file
-    public int loadProductHistory(BufferedReader productStream){
-        int count = 0;
-        try{
-            String line;
-
-            //Reading each line from the file and splitting into parts
-            while((line = productStream.readLine()) != null){
-                String[] parts = line.split("\t");
-                if(parts.length == 4){
-                    //Extract the product date
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                    Date date;
-                    try{
-                        date = dateFormat.parse(parts[0]);
-                    } catch (ParseException e) {
-                        System.out.println("Invalid date format: "+parts[0]);
-                        continue;
-                    }
-                    String name = parts[1].toLowerCase();
-                    String size = parts[2].toLowerCase();
-                    float price = Float.parseFloat(parts[3].substring(1)); //remove the dollar sign
-
-                    //Create new Product object
-                    Product product = new Product(date, name, size, price);
-
-                    //Add product to the product list
-                    productList.put(name, product);//use product name as key
-                    count++;
-                } else{
-                    //Print error message if the line is not in correct format
-                    System.out.println("Invalid product data "+line);
-                }
-            }
-        } catch (IOException e){
-            System.out.println("Error reading product list: "+e.getMessage());
-        }
-        return count;
     }
 
     //Method to retrieve a product by name
-    public Product getProduct(String name){
-        return productList.get(name.toLowerCase());
+    public List<Product> getProductsByName(String name) {
+        // Create a list to store the products
+        List<Product> products = new ArrayList<>();
+
+        // Iterate over the products in the list
+        for (Product product : productList) {
+            // Check if the product name matches
+            if (product.getName().equalsIgnoreCase(name)) {
+                // Add the product to the list if found
+                products.add(product);
+            }
+        }
+        // Return the list of products
+        return products;
     }
 
     //Inner class that represents a product

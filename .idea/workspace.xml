@@ -5,15 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b166c12f-7a54-45b9-b281-277de64d3bc0" name="Changes" comment="created repository">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/extra.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CostOfLiving.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CostOfLiving.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Products.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Products.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ShoppingCarts.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ShoppingCarts.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/productList.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/productList.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/shoppingCart.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/shoppingCart.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +59,20 @@
     "settings.editor.selected.configurable": "preferences.keymap"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="A1" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
