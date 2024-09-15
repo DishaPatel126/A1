@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -127,8 +129,37 @@ public class CostOfLiving {
         }
     }
 
-    float shoppingCartCost( int cartNumber, int year, int month ){
-        return 0;
+    float shoppingCartCost(int cartNumber, int year, int month) {
+        float totalCost = 0.0f;
+        Map<String, Map<String, Integer>> cart = carts.get(cartNumber);
+        if (cart != null) {
+            for (Map.Entry<String, Map<String, Integer>> entry : cart.entrySet()) {
+                String productName = entry.getKey();
+                Map<String, Integer> sizeQuantityMap = entry.getValue();
+                for (Map.Entry<String, Integer> sizeQuantityEntry : sizeQuantityMap.entrySet()) {
+                    String size = sizeQuantityEntry.getKey();
+                    int quantity = sizeQuantityEntry.getValue();
+                    // Find the product in the product list that matches the product name and size
+                    for (Products.Product product : productList) {
+                        if (product.getName().toLowerCase().equals(productName.toLowerCase()) && product.getSize().toLowerCase().equals(size.toLowerCase())) {
+                            // Check if the product's date matches the given year and month
+                            Date productDate = product.getDate();
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(productDate);
+                            int productYear = calendar.get(Calendar.YEAR);
+                            int productMonth = calendar.get(Calendar.MONTH) + 1; // +1 because MONTH is 0-based
+                            if (productYear == year && productMonth == month) {
+                                // Calculate the cost
+                                float price = product.getPrice();
+                                totalCost += price * quantity;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return totalCost;
     }
 
     public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth ) {

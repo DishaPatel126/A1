@@ -25,6 +25,7 @@ public class Main {
             int cartID = costOfLiving.loadShoppingCart(cartStream);
             if(cartID > 0){
                 System.out.println("Loaded shopping cart with ID: "+cartID);
+                System.out.println("Shopping cart cost: "+costOfLiving.shoppingCartCost(cartID, 2024, 01));
 
             } else {
                 System.out.println("Error loading shopping cart");
@@ -32,5 +33,7 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Error in shopping cart file: " +e.getMessage());
         }
+
+
     }
 }
