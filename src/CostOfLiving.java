@@ -23,13 +23,13 @@ public class CostOfLiving {
     }
 
     //Method to load the product list from file
-    public int loadProductHistory(BufferedReader productStream){
+    public int loadProductHistory(BufferedReader productStream) {
         int count = 0;
-        try{
+        try {
             String line;
 
             //Reading each line from the file and splitting into parts
-            while((line = productStream.readLine()) != null) {
+            while ((line = productStream.readLine()) != null) {
                 String[] parts = line.split("\t");
                 if (parts.length == 4) {
                     //Extract the product date
@@ -69,8 +69,8 @@ public class CostOfLiving {
 
 //            findProductByName("Apple Juice");
 
-        } catch (IOException e){
-            System.out.println("Error reading product list: "+e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Error reading product list: " + e.getMessage());
         }
         return count;
     }
@@ -126,7 +126,6 @@ public class CostOfLiving {
             return -1;
         }
     }
-
 
 
     float shoppingCartCost(int cartNumber, int year, int month) {
@@ -199,18 +198,11 @@ public class CostOfLiving {
         return totalCost;
     }
 
-
-
-
-
-
-
-
-    public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth ) {
+    public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth) {
         return null;
     }
 
-    public List<String> priceInversion(int year, int month, int tolerance ) {
+    public List<String> priceInversion(int year, int month, int tolerance) {
         return null;
     }
 
@@ -261,29 +253,29 @@ public class CostOfLiving {
             return -1; // Handle the error as necessary
         }
     }
-
-
-
-    public List<Products.Product> findProductByName(String name) {
-        List<Products.Product> productsByName = new ArrayList<>();
-        for (Products.Product p : productList) {
-            if (p.getName().toLowerCase().contains(name.toLowerCase())) {
-                productsByName.add(p);
-            }
-        }
-//         Print the product data
-        if (!productsByName.isEmpty()) {
-//            System.out.println("Products found:");
-//            for (Products.Product p : productsByName) {
-//                System.out.println("  Name: " + p.getName());
-//                System.out.println("  Date: " + p.getDate());
-//                System.out.println("  Size: " + p.getSize());
-//                System.out.println("  Price: $" + p.getPrice());
-//                System.out.println();
-//            }
-        } else {
-            System.out.println("No products found");
-        }
-        return productsByName;
-    }
 }
+
+
+
+//    public List<Products.Product> findProductByName(String name) {
+//        List<Products.Product> productsByName = new ArrayList<>();
+//        for (Products.Product p : productList) {
+//            if (p.getName().toLowerCase().contains(name.toLowerCase())) {
+//                productsByName.add(p);
+//            }
+//        }
+////         Print the product data
+//        if (!productsByName.isEmpty()) {
+////            System.out.println("Products found:");
+////            for (Products.Product p : productsByName) {
+////                System.out.println("  Name: " + p.getName());
+////                System.out.println("  Date: " + p.getDate());
+////                System.out.println("  Size: " + p.getSize());
+////                System.out.println("  Price: $" + p.getPrice());
+////                System.out.println();
+////            }
+//        } else {
+//            System.out.println("No products found");
+//        }
+//        return productsByName;
+//    }
