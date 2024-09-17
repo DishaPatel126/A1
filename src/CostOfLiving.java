@@ -209,23 +209,40 @@ public class CostOfLiving {
     public List<Products.Product> findMatchingProducts(String productName, int year, int month) {
         List<Products.Product> matchingProducts = new ArrayList<>();
 
-        for (Products.Product product : productList) {
-            // Check if the product name matches
-            if (product.getName().toLowerCase().equals(productName.toLowerCase())) {
-                // Check if the product's date matches the given year and month
-                Date productDate = product.getDate();
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(productDate);
-                int productYear = calendar.get(Calendar.YEAR);
-                int productMonth = calendar.get(Calendar.MONTH) + 1; // +1 because MONTH is 0-based
+        // Loop until we find matching products or run out of months to check
+        while (year >= 0) {  // Continue until we reach an invalid year (year < 0)
+            for (Products.Product product : productList) {
+                // Check if the product name matches
+                if (product.getName().toLowerCase().equals(productName.toLowerCase())) {
+                    // Check if the product's date matches the given year and month
+                    Date productDate = product.getDate();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(productDate);
+                    int productYear = calendar.get(Calendar.YEAR);
+                    int productMonth = calendar.get(Calendar.MONTH) + 1; // +1 because MONTH is 0-based
 
-                if (productYear == year && productMonth == month) {
-                    matchingProducts.add(product); // Add the product to the matching list
+                    if (productYear == year && productMonth == month) {
+                        matchingProducts.add(product); // Add the product to the matching list
+                    }
                 }
+            }
+
+            // If we found matching products, return them
+            if (!matchingProducts.isEmpty()) {
+                return matchingProducts;
+            }
+
+            // Otherwise, move to the previous month
+            month--;
+            if (month == 0) {
+                // If we reach month 0, move to the previous year and set the month to December (12)
+                year--;
+                month = 12;
             }
         }
 
-        return matchingProducts; // Return all products that match the criteria
+        // Return an empty list if no matches are found
+        return matchingProducts;
     }
 
 
