@@ -1,7 +1,5 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -9,7 +7,7 @@ import java.util.*;
 public class CostOfLiving {
     //Map to store products with product name as key
     private List<Products.Product> productList;
-    private Map<Integer, Map<String, Map<String, Integer>>> carts;
+    private Map<Integer, Map<String, Map<String, Float>>> carts;
     private int cartID;
 
 
@@ -69,7 +67,7 @@ public class CostOfLiving {
 //                System.out.println();
 //            }
 
-            findProductByName("Instant Coffee");
+//            findProductByName("Apple Juice");
 
         } catch (IOException e){
             System.out.println("Error reading product list: "+e.getMessage());
@@ -81,10 +79,10 @@ public class CostOfLiving {
     public int loadShoppingCart(BufferedReader cartStream) {
         try {
             String line;
-            //Mapping the size and quantity with the product name
-            Map<String, Map<String, Integer>> cart = new HashMap<>();
+            // Mapping the product name to size and the total desired quantity (e.g. "2 l" or "2.5 kg")
+            Map<String, Map<String, Float>> cart = new HashMap<>();
 
-            //Reading each line from the file and splitting into parts
+            // Reading each line from the file and splitting into parts
             while ((line = cartStream.readLine()) != null) {
                 String[] parts = line.split("\t");
                 if (parts.length != 3) {
@@ -92,25 +90,24 @@ public class CostOfLiving {
                     return -1;
                 }
 
-                String productName = parts[0].trim().toLowerCase();
-                String size = parts[1].trim().toLowerCase();
+                String productName = parts[0].trim().toLowerCase();  // Product name
+                String size = parts[1].trim().toLowerCase();         // Size (e.g. "1 l")
+                String totalQuantityStr = parts[2].trim().toLowerCase(); // Desired total quantity (e.g. "2 l", "2.5 kg")
+
                 try {
-                    int quantity = Integer.parseInt(parts[2].trim());
+                    // Convert total quantity to a float in the same unit as the size (e.g., "2 l" -> 2.0)
+                    float totalQuantity = convertToBaseUnit(totalQuantityStr);
 
-                    //Quantity check
-                    if (quantity <= 0) {
-                        System.out.println("Invalid quantity");
-                        return -1;
-                    }
-
-                    //Check if the product name already exists or not.
+                    // Check if the product name already exists in the cart
                     if (!cart.containsKey(productName)) {
                         cart.put(productName, new HashMap<>());
                     }
-                    //Retrieves inner map to store different data with same product name.
-                    cart.get(productName).put(size, quantity);
+
+                    // Store the desired total quantity for this product size
+                    cart.get(productName).put(size, totalQuantity);
+
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid quantity: " + parts[2]);
+                    System.out.println("Invalid total quantity: " + totalQuantityStr);
                     return -1;
                 }
             }
@@ -120,47 +117,94 @@ public class CostOfLiving {
                 return -1;
             }
 
-            //Add the cart to the map
+            // Add the cart to the map
             carts.put(cartID, cart);
             return cartID++;
+
         } catch (IOException e) {
-            System.out.println("Error in reading product history: " + e.getMessage());
+            System.out.println("Error in reading shopping cart: " + e.getMessage());
             return -1;
         }
     }
 
+
+
     float shoppingCartCost(int cartNumber, int year, int month) {
         float totalCost = 0.0f;
-        Map<String, Map<String, Integer>> cart = carts.get(cartNumber);
-        if (cart != null) {
-            for (Map.Entry<String, Map<String, Integer>> entry : cart.entrySet()) {
-                String productName = entry.getKey();
-                Map<String, Integer> sizeQuantityMap = entry.getValue();
-                for (Map.Entry<String, Integer> sizeQuantityEntry : sizeQuantityMap.entrySet()) {
-                    String size = sizeQuantityEntry.getKey();
-                    int quantity = sizeQuantityEntry.getValue();
-                    // Find the product in the product list that matches the product name and size
-                    for (Products.Product product : productList) {
-                        if (product.getName().toLowerCase().equals(productName.toLowerCase()) && product.getSize().toLowerCase().equals(size.toLowerCase())) {
-                            // Check if the product's date matches the given year and month
-                            Date productDate = product.getDate();
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(productDate);
-                            int productYear = calendar.get(Calendar.YEAR);
-                            int productMonth = calendar.get(Calendar.MONTH) + 1; // +1 because MONTH is 0-based
-                            if (productYear == year && productMonth == month) {
-                                // Calculate the cost
-                                float price = product.getPrice();
-                                totalCost += price * quantity;
+        Map<String, Map<String, Float>> cart = carts.get(cartNumber); // Using Float for total quantity (like 2 l or 500 g)
 
+        if (cart != null) {
+            for (Map.Entry<String, Map<String, Float>> entry : cart.entrySet()) {
+                String productName = entry.getKey();
+                Map<String, Float> sizeQuantityMap = entry.getValue();
+
+                for (Map.Entry<String, Float> sizeQuantityEntry : sizeQuantityMap.entrySet()) {
+                    String requestedSize = sizeQuantityEntry.getKey(); // e.g. "1 l"
+                    float requestedQuantity = sizeQuantityEntry.getValue();  // e.g. 2.0 (representing 2 l)
+
+                    // Find matching products in the product list
+                    List<Products.Product> matchingProducts = findMatchingProducts(productName, year, month);
+
+                    if (!matchingProducts.isEmpty()) {
+                        // Group products by size and sort by price ascending within each size
+                        Map<Float, List<Products.Product>> sizeToProducts = new HashMap<>();
+                        for (Products.Product product : matchingProducts) {
+                            float productSizeInBaseUnit = convertToBaseUnit(product.getSize());
+                            if (productSizeInBaseUnit > 0) {
+                                sizeToProducts.computeIfAbsent(productSizeInBaseUnit, k -> new ArrayList<>()).add(product);
                             }
                         }
+
+                        // Convert the size-to-products map to a sorted list by price per unit size
+                        List<Map.Entry<Float, List<Products.Product>>> sortedSizes = new ArrayList<>(sizeToProducts.entrySet());
+                        sortedSizes.sort((entry1, entry2) -> {
+                            // Compare prices per unit size
+                            Products.Product cheapest1 = Collections.min(entry1.getValue(), Comparator.comparing(Products.Product::getPrice));
+                            Products.Product cheapest2 = Collections.min(entry2.getValue(), Comparator.comparing(Products.Product::getPrice));
+                            float pricePerUnit1 = cheapest1.getPrice() / entry1.getKey();
+                            float pricePerUnit2 = cheapest2.getPrice() / entry2.getKey();
+                            return Float.compare(pricePerUnit1, pricePerUnit2);
+                        });
+
+                        // Fulfill the required quantity using the available product sizes
+                        float remainingQuantity = requestedQuantity;
+                        for (Map.Entry<Float, List<Products.Product>> sizeEntry : sortedSizes) {
+                            Float size = sizeEntry.getKey();
+                            List<Products.Product> productsOfSize = sizeEntry.getValue();
+                            if (productsOfSize != null && !productsOfSize.isEmpty()) {
+                                // Use the cheapest available product of this size
+                                Products.Product cheapestProduct = Collections.min(productsOfSize, Comparator.comparing(Products.Product::getPrice));
+
+                                // Calculate how many units are needed
+                                int unitsNeeded = (int) Math.ceil(remainingQuantity / size);
+                                totalCost += unitsNeeded * cheapestProduct.getPrice();
+                                remainingQuantity -= unitsNeeded * size;
+
+                                // If we have fulfilled the requested quantity, stop
+                                if (remainingQuantity <= 0) {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (remainingQuantity > 0) {
+                            System.out.println("Unable to fulfill the total quantity for " + productName + " (" + requestedQuantity + " " + requestedSize + ")");
+                        }
+                    } else {
+                        System.out.println("No matching products found for " + productName + " in the given year and month.");
                     }
                 }
             }
         }
         return totalCost;
     }
+
+
+
+
+
+
+
 
     public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth ) {
         return null;
@@ -170,16 +214,65 @@ public class CostOfLiving {
         return null;
     }
 
-    public void findProductByName(String name) {
+    public List<Products.Product> findMatchingProducts(String productName, int year, int month) {
+        List<Products.Product> matchingProducts = new ArrayList<>();
+
+        for (Products.Product product : productList) {
+            // Check if the product name matches
+            if (product.getName().toLowerCase().equals(productName.toLowerCase())) {
+                // Check if the product's date matches the given year and month
+                Date productDate = product.getDate();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(productDate);
+                int productYear = calendar.get(Calendar.YEAR);
+                int productMonth = calendar.get(Calendar.MONTH) + 1; // +1 because MONTH is 0-based
+
+                if (productYear == year && productMonth == month) {
+                    matchingProducts.add(product); // Add the product to the matching list
+                }
+            }
+        }
+
+        return matchingProducts; // Return all products that match the criteria
+    }
+
+
+    private float convertToBaseUnit(String size) {
+        size = size.toLowerCase().trim(); // Convert to lowercase and remove extra spaces
+
+        try {
+            if (size.endsWith("ml")) {
+                // Handle milliliters (convert to liters)
+                return Float.parseFloat(size.replace("ml", "").trim()) / 1000;
+            } else if (size.endsWith("l")) {
+                // Handle liters
+                return Float.parseFloat(size.replace("l", "").trim());
+            } else if (size.endsWith("g") && !size.endsWith("kg")) {
+                // Handle grams (convert to kilograms)
+                return Float.parseFloat(size.replace("g", "").trim()) / 1000;
+            } else if (size.endsWith("kg")) {
+                // Handle kilograms
+                return Float.parseFloat(size.replace("kg", "").trim());
+            } else {
+                throw new IllegalArgumentException("Unknown or missing size unit: " + size);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid size format: [" + size + "]");
+            return -1; // Handle the error as necessary
+        }
+    }
+
+
+
+    public List<Products.Product> findProductByName(String name) {
         List<Products.Product> productsByName = new ArrayList<>();
         for (Products.Product p : productList) {
             if (p.getName().toLowerCase().contains(name.toLowerCase())) {
                 productsByName.add(p);
             }
         }
-
-        // Print the product data
-//        if (!productsByName.isEmpty()) {
+//         Print the product data
+        if (!productsByName.isEmpty()) {
 //            System.out.println("Products found:");
 //            for (Products.Product p : productsByName) {
 //                System.out.println("  Name: " + p.getName());
@@ -188,8 +281,9 @@ public class CostOfLiving {
 //                System.out.println("  Price: $" + p.getPrice());
 //                System.out.println();
 //            }
-//        } else {
-//            System.out.println("No products found");
-//        }
+        } else {
+            System.out.println("No products found");
+        }
+        return productsByName;
     }
 }

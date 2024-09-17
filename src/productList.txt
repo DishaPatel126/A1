@@ -1,4 +1,5 @@
-2024/01/01	Apple Juice	1 l	$3.99
+2024/01/01	Apple Juice	500 ml	$2.25
+2024/01/02	Apple Juice	1 l	$3.99
 2024/01/05	Milk	2 l	$4.99
 2024/01/10	Orange Juice	500 ml	$2.49
 2024/01/15	Water	1.5 l	$1.99
@@ -9,6 +10,7 @@
 2024/01/27	Tea	100 g	$3.99
 2024/01/27	Rice	5 kg	$9.99
 2024/02/02	Apple Juice	1 l	$5.99
+2024/02/02	Apple Juice	500 ml	$1.49
 2024/02/05	Milk	2 l	$3.99
 2024/02/11	Orange Juice	500 ml	$2.99
 2024/02/14	Water	1.5 l	$1.99

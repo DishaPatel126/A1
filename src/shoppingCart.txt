@@ -1,4 +1,4 @@
-Orange	500 ml	2
-Water	1.5 l	2
-Honey	500 g	5
-Milk	2 l	3
+Apple Juice	500 ml	2 l
+Water	1.5 l	2 l
+Honey	500 g	2.5 kg
+Milk	2 l	6 l
