@@ -34,6 +34,17 @@ public class Main {
             System.out.println("Error in shopping cart file: " +e.getMessage());
         }
 
+        Map<String, Float> inflationReport = costOfLiving.inflation(2024, 1, 2024, 2);
+        if (inflationReport != null) {
+            for (Map.Entry<String, Float> entry : inflationReport.entrySet()) {
+                System.out.println("Product: " + entry.getKey() + ", Inflation: " + (entry.getValue()) + "%");
+            }
+        } else {
+            System.out.println("No inflation data available.");
+        }
+
+
+
 
     }
 }

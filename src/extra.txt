@@ -1,3 +1,72 @@
+public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth) {
+        Map<String, Float> inflationMap = new HashMap<>();
+
+        // Loop through all products
+        for (Products.Product startProduct : productList) {
+            // Find products at the start of the period
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startProduct.getDate());
+            int productYear = calendar.get(Calendar.YEAR);
+            int productMonth = calendar.get(Calendar.MONTH) + 1; // 0-based month, so +1
+
+            // If product is not in the starting month, skip it
+            if (productYear != startYear || productMonth != startMonth) {
+                continue;
+            }
+
+            // Find the same product in the end month
+            Products.Product matchingEndProduct = null;
+            for (Products.Product tempProduct : productList) {
+                calendar.setTime(tempProduct.getDate());
+                int tempYear = calendar.get(Calendar.YEAR);
+                int tempMonth = calendar.get(Calendar.MONTH) + 1;
+
+                // Match by both name and size, and ensure it is in the end date range
+                if (tempProduct.getName().equals(startProduct.getName()) &&
+                        tempProduct.getSize().equals(startProduct.getSize()) &&
+                        tempYear == endYear && tempMonth == endMonth) {
+
+                    matchingEndProduct = tempProduct;  // Found matching product
+                    break;  // Exit loop if exact match found (same name and size)
+                }
+            }
+
+            // If there's no matching product in the end month, skip
+            if (matchingEndProduct == null) {
+                continue;
+            }
+
+            // Convert sizes to base units
+            float startSizeInBaseUnits = convertToBaseUnit(startProduct.getSize());
+            float endSizeInBaseUnits = convertToBaseUnit(matchingEndProduct.getSize());
+
+            // Calculate inflation or shrinkflation
+            float inflationRate = 0;
+            if (startSizeInBaseUnits == endSizeInBaseUnits) {
+                // Regular cost inflation (same size)
+                inflationRate = (matchingEndProduct.getPrice() - startProduct.getPrice()) / startProduct.getPrice() * 100;
+            } else {
+                // Shrinkflation: sizes changed
+                float startUnitCost = startProduct.getPrice() / startSizeInBaseUnits;
+                float endUnitCost = matchingEndProduct.getPrice() / endSizeInBaseUnits;
+                inflationRate = (endUnitCost - startUnitCost) / startUnitCost * 100;
+            }
+
+            // Add products regardless of whether inflation is positive or negative
+            String productKey = matchingEndProduct.getName() + " " + matchingEndProduct.getSize(); // Product name and size
+            inflationMap.put(productKey, inflationRate);
+        }
+
+        return inflationMap.isEmpty() ? null : inflationMap;
+    }
+
+
+
+
+
+
+
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.ParseException;

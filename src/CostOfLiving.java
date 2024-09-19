@@ -199,8 +199,85 @@ public class CostOfLiving {
     }
 
     public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth) {
-        return null;
+        Map<String, Float> inflationMap = new HashMap<>();
+
+        // Loop through all products in the start month
+        for (Products.Product startProduct : productList) {
+            // Get the date of the current product
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startProduct.getDate());
+            int productYear = calendar.get(Calendar.YEAR);
+            int productMonth = calendar.get(Calendar.MONTH) + 1; // 0-based month, so +1
+
+            // Only consider products from the start year and month
+            if (productYear != startYear || productMonth != startMonth) {
+                continue;
+            }
+
+            // Try to find a matching product in the end period
+            Products.Product matchingEndProduct = null;
+            for (Products.Product tempProduct : productList) {
+                // Get the date of the temp product
+                calendar.setTime(tempProduct.getDate());
+                int tempYear = calendar.get(Calendar.YEAR);
+                int tempMonth = calendar.get(Calendar.MONTH) + 1;
+
+                // Match by both name and size, and ensure it is in the end date range
+                if (tempProduct.getName().equals(startProduct.getName()) &&
+                        tempProduct.getSize().equals(startProduct.getSize()) &&
+                        tempYear == endYear && tempMonth == endMonth) {
+
+                    matchingEndProduct = tempProduct;  // Found matching product
+                    break;  // Exit loop if exact match found (same name and size)
+                }
+            }
+
+            // If no exact size match is found, check for other sizes of the same product
+            if (matchingEndProduct == null) {
+                for (Products.Product tempProduct : productList) {
+                    // Match only by name (ignore size) and ensure it's within the end date range
+                    calendar.setTime(tempProduct.getDate());
+                    int tempYear = calendar.get(Calendar.YEAR);
+                    int tempMonth = calendar.get(Calendar.MONTH) + 1;
+
+                    if (tempProduct.getName().equals(startProduct.getName()) &&
+                            tempYear == endYear && tempMonth == endMonth) {
+
+                        matchingEndProduct = tempProduct;  // Found a match with a different size
+                        break;  // Exit loop if we find a different size of the same product
+                    }
+                }
+            }
+
+            if (matchingEndProduct == null) {
+                continue;
+            }
+
+            // Convert sizes to base units (to handle shrinkflation if sizes differ)
+            float startSizeInBaseUnits = convertToBaseUnit(startProduct.getSize());
+            float endSizeInBaseUnits = convertToBaseUnit(matchingEndProduct.getSize());
+
+            // Calculate inflation or shrinkflation
+            float inflationRate = 0;
+            if (startSizeInBaseUnits == endSizeInBaseUnits) {
+                // Regular cost inflation (same size)
+                inflationRate = (matchingEndProduct.getPrice() - startProduct.getPrice()) / startProduct.getPrice() * 100;
+            } else {
+                // Shrinkflation: sizes changed
+                float startUnitCost = startProduct.getPrice() / startSizeInBaseUnits;
+                float endUnitCost = matchingEndProduct.getPrice() / endSizeInBaseUnits;
+                inflationRate = (endUnitCost - startUnitCost) / startUnitCost * 100;
+            }
+
+            // Add to the inflation map
+            if(inflationRate > 0) {
+                String productKey = matchingEndProduct.getName() + " " + matchingEndProduct.getSize();
+                inflationMap.put(productKey, inflationRate);
+            }
+        }
+        return inflationMap.isEmpty() ? null : inflationMap;
     }
+
 
     public List<String> priceInversion(int year, int month, int tolerance) {
         return null;
@@ -271,28 +348,3 @@ public class CostOfLiving {
         }
     }
 }
-
-
-
-//    public List<Products.Product> findProductByName(String name) {
-//        List<Products.Product> productsByName = new ArrayList<>();
-//        for (Products.Product p : productList) {
-//            if (p.getName().toLowerCase().contains(name.toLowerCase())) {
-//                productsByName.add(p);
-//            }
-//        }
-////         Print the product data
-//        if (!productsByName.isEmpty()) {
-////            System.out.println("Products found:");
-////            for (Products.Product p : productsByName) {
-////                System.out.println("  Name: " + p.getName());
-////                System.out.println("  Date: " + p.getDate());
-////                System.out.println("  Size: " + p.getSize());
-////                System.out.println("  Price: $" + p.getPrice());
-////                System.out.println();
-////            }
-//        } else {
-//            System.out.println("No products found");
-//        }
-//        return productsByName;
-//    }
