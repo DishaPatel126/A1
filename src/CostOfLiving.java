@@ -7,9 +7,8 @@ import java.util.*;
 public class CostOfLiving {
     //Map to store products with product name as key
     private List<Products.Product> productList;
-    private Map<Integer, Map<String, Map<String, Float>>> carts;
+    private Map<Integer, Map<String, Float>> carts;
     private int cartID;
-
 
     //constructor to initialise instance of the object
     public CostOfLiving() {
@@ -25,11 +24,27 @@ public class CostOfLiving {
     //Method to load the product list from file
     public int loadProductHistory(BufferedReader productStream) {
         int count = 0;
+        Set<String> validUnits = new HashSet<>();
+        validUnits.add("l"); // Add valid units here
+        validUnits.add("ml");
+        validUnits.add("kg");
+        validUnits.add("g");
+
+        if (productStream == null) {
+            System.out.println("Product stream is null");
+            return -1; // Return a negative value to indicate failure when stream is null
+        }
         try {
             String line;
 
             //Reading each line from the file and splitting into parts
             while ((line = productStream.readLine()) != null) {
+
+                // Skip empty or blank lines
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
                 String[] parts = line.split("\t");
                 if (parts.length == 4) {
                     //Extract the product date
@@ -41,9 +56,55 @@ public class CostOfLiving {
                         System.out.println("Invalid date format: " + parts[0]);
                         continue;
                     }
-                    String name = parts[1].toLowerCase();
-                    String size = parts[2].toLowerCase();
-                    float price = Float.parseFloat(parts[3].substring(1)); //remove the dollar sign
+
+                    String name = parts[1].trim();
+                    if (name.isEmpty()) {
+                        System.out.println("Invalid product name (empty or spaces): " + parts[1]);
+                        return -1;  // Return error for empty or spaces-only name
+                    }
+
+                    String size = parts[2].trim();
+                    // **Check for missing space between quantity and unit**
+                    if (size.isEmpty() || !size.matches("\\d+(\\.\\d+)?\\s+[a-zA-Z]+")) {
+                        System.out.println("Invalid size format (missing space or invalid size): " + size);
+                        return -1;  // Return error for missing space or invalid format
+                    }
+
+                    // Check for valid unit
+                    String unit = size.split(" ")[1]; // Assuming size is in format "quantity unit"
+                    if (!validUnits.contains(unit)) {
+                        System.out.println("Invalid unit size: " + unit);
+                        return -1; // Return error for invalid unit
+                    }
+
+                    float price ;
+                    try {
+                        price = Float.parseFloat(parts[3].trim());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid price format: " + parts[3]);
+                        return -1; // Return error if price is invalid
+                    }
+
+                    if (price < 0) {
+                        System.out.println("Invalid cost (negative): " + price);
+                        return -1;  // Return error for negative price
+                    }
+
+                    // Extract quantity from size
+                    float quantity;
+                    try {
+                        // Extract numeric value from size (e.g., "1 l" -> 1)
+                        quantity = Float.parseFloat(size.split(" ")[0]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid quantity in size: " + size);
+                        return -1; // Return error if quantity is not a valid number
+                    }
+
+                    // Check for negative or zero quantity
+                    if (quantity <= 0) {
+                        System.out.println("Invalid quantity (negative or zero): " + quantity);
+                        return -1; // Return error for invalid quantity
+                    }
 
                     //Create new Product object
                     Products.Product product = new Products.Product(date, name, size, price);
@@ -54,23 +115,13 @@ public class CostOfLiving {
                 } else {
                     //Print error message if the line is not in correct format
                     System.out.println("Invalid product data " + line);
+                    return -1;
                 }
             }
 
-//            // Print the product data
-//            System.out.println("Product List:");
-//            for (Products.Product p : productList) {
-//                System.out.println("  Name: " + p.getName());
-//                System.out.println("  Date: " + p.getDate());
-//                System.out.println("  Size: " + p.getSize());
-//                System.out.println("  Price: $" + p.getPrice());
-//                System.out.println();
-//            }
-
-//            findProductByName("Apple Juice");
-
         } catch (IOException e) {
-            System.out.println("Error reading product list: " + e.getMessage());
+            e.printStackTrace();
+            return -1;
         }
         return count;
     }
@@ -80,31 +131,25 @@ public class CostOfLiving {
         try {
             String line;
             // Mapping the product name to size and the total desired quantity (e.g. "2 l" or "2.5 kg")
-            Map<String, Map<String, Float>> cart = new HashMap<>();
+            Map<String, Float> cart = new HashMap<>();
 
             // Reading each line from the file and splitting into parts
             while ((line = cartStream.readLine()) != null) {
                 String[] parts = line.split("\t");
-                if (parts.length != 3) {
+                if (parts.length != 2) {
                     System.out.println("Invalid line format: " + line);
                     return -1;
                 }
 
                 String productName = parts[0].trim().toLowerCase();  // Product name
-                String size = parts[1].trim().toLowerCase();         // Size (e.g. "1 l")
-                String totalQuantityStr = parts[2].trim().toLowerCase(); // Desired total quantity (e.g. "2 l", "2.5 kg")
+                String totalQuantityStr = parts[1].trim().toLowerCase(); // Desired total quantity (e.g. "2 l", "2.5 kg")
 
                 try {
                     // Convert total quantity to a float in the same unit as the size (e.g., "2 l" -> 2.0)
                     float totalQuantity = convertToBaseUnit(totalQuantityStr);
 
-                    // Check if the product name already exists in the cart
-                    if (!cart.containsKey(productName)) {
-                        cart.put(productName, new HashMap<>());
-                    }
-
                     // Store the desired total quantity for this product size
-                    cart.get(productName).put(size, totalQuantity);
+                    cart.put(productName, totalQuantity);
 
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid total quantity: " + totalQuantityStr);
@@ -122,7 +167,7 @@ public class CostOfLiving {
             return cartID++;
 
         } catch (IOException e) {
-            System.out.println("Error in reading shopping cart: " + e.getMessage());
+            e.printStackTrace();
             return -1;
         }
     }
@@ -130,156 +175,259 @@ public class CostOfLiving {
 
     float shoppingCartCost(int cartNumber, int year, int month) {
         float totalCost = 0.0f;
-        Map<String, Map<String, Float>> cart = carts.get(cartNumber); // Using Float for total quantity (like 2 l or 500 g)
+        Map<String, Float> cart = carts.get(cartNumber); // Cart map with product name and required quantity
 
         if (cart != null) {
-            for (Map.Entry<String, Map<String, Float>> entry : cart.entrySet()) {
+            for (Map.Entry<String, Float> entry : cart.entrySet()) {
                 String productName = entry.getKey();
-                Map<String, Float> sizeQuantityMap = entry.getValue();
+                float quantity = entry.getValue();
 
-                for (Map.Entry<String, Float> sizeQuantityEntry : sizeQuantityMap.entrySet()) {
-                    String requestedSize = sizeQuantityEntry.getKey(); // e.g. "1 l"
-                    float requestedQuantity = sizeQuantityEntry.getValue();  // e.g. 2.0 (representing 2 l)
+                // Find the latest matching products for the given product name
+                List<Products.Product> matchingProducts = findMatchingProducts(productName, year, month);
 
-                    // Find matching products in the product list
-                    List<Products.Product> matchingProducts = findMatchingProducts(productName, year, month);
+                if (!matchingProducts.isEmpty()) {
+                    // Filter out products with a price of 0 on or before the given date
+                    matchingProducts = filterOutZeroCostProducts(matchingProducts, year, month);
 
-                    if (!matchingProducts.isEmpty()) {
-                        // Group products by size and sort by price ascending within each size
-                        Map<Float, List<Products.Product>> sizeToProducts = new HashMap<>();
-                        for (Products.Product product : matchingProducts) {
-                            float productSizeInBaseUnit = convertToBaseUnit(product.getSize());
-                            if (productSizeInBaseUnit > 0) {
-                                sizeToProducts.computeIfAbsent(productSizeInBaseUnit, k -> new ArrayList<>()).add(product);
-                            }
+                    // Group products by size
+                    Map<Float, List<Products.Product>> sizeToProducts = new HashMap<>();
+                    for (Products.Product product : matchingProducts) {
+                        float productSizeInBaseUnit = convertToBaseUnit(product.getSize());
+                        if (productSizeInBaseUnit > 0) {
+                            sizeToProducts.computeIfAbsent(productSizeInBaseUnit, k -> new ArrayList<>()).add(product);
                         }
-
-                        // Convert the size-to-products map to a sorted list by price per unit size
-                        List<Map.Entry<Float, List<Products.Product>>> sortedSizes = new ArrayList<>(sizeToProducts.entrySet());
-                        sortedSizes.sort((entry1, entry2) -> {
-                            // Compare prices per unit size
-                            Products.Product cheapest1 = Collections.min(entry1.getValue(), Comparator.comparing(Products.Product::getPrice));
-                            Products.Product cheapest2 = Collections.min(entry2.getValue(), Comparator.comparing(Products.Product::getPrice));
-                            float pricePerUnit1 = cheapest1.getPrice() / entry1.getKey();
-                            float pricePerUnit2 = cheapest2.getPrice() / entry2.getKey();
-                            return Float.compare(pricePerUnit1, pricePerUnit2);
-                        });
-
-                        // Fulfill the required quantity using the available product sizes
-                        float remainingQuantity = requestedQuantity;
-                        for (Map.Entry<Float, List<Products.Product>> sizeEntry : sortedSizes) {
-                            Float size = sizeEntry.getKey();
-                            List<Products.Product> productsOfSize = sizeEntry.getValue();
-                            if (productsOfSize != null && !productsOfSize.isEmpty()) {
-                                // Use the cheapest available product of this size
-                                Products.Product cheapestProduct = Collections.min(productsOfSize, Comparator.comparing(Products.Product::getPrice));
-
-                                // Calculate how many units are needed
-                                int unitsNeeded = (int) Math.ceil(remainingQuantity / size);
-                                totalCost += unitsNeeded * cheapestProduct.getPrice();
-                                remainingQuantity -= unitsNeeded * size;
-
-                                // If we have fulfilled the requested quantity, stop
-                                if (remainingQuantity <= 0) {
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (remainingQuantity > 0) {
-                            System.out.println("Unable to fulfill the total quantity for " + productName + " (" + requestedQuantity + " " + requestedSize + ")");
-                        }
-                    } else {
-                        System.out.println("No matching products found for " + productName + " in the given year and month.");
                     }
+
+                    // Convert size-to-products map to a sorted list by price per unit size
+                    List<Map.Entry<Float, List<Products.Product>>> sortedSizes = new ArrayList<>(sizeToProducts.entrySet());
+                    sortedSizes.sort((entry1, entry2) -> {
+                        Products.Product cheapest1 = Collections.min(entry1.getValue(), Comparator.comparing(Products.Product::getPrice));
+                        Products.Product cheapest2 = Collections.min(entry2.getValue(), Comparator.comparing(Products.Product::getPrice));
+                        float pricePerUnit1 = cheapest1.getPrice() / entry1.getKey();
+                        float pricePerUnit2 = cheapest2.getPrice() / entry2.getKey();
+                        return Float.compare(pricePerUnit1, pricePerUnit2);
+                    });
+
+                    // Fulfill the required quantity using the available product sizes
+                    float remainingQuantity = quantity;
+                    for (Map.Entry<Float, List<Products.Product>> sizeEntry : sortedSizes) {
+                        Float size = sizeEntry.getKey();
+                        List<Products.Product> productsOfSize = sizeEntry.getValue();
+                        if (productsOfSize != null && !productsOfSize.isEmpty()) {
+                            // Use the cheapest available product of this size
+                            Products.Product cheapestProduct = Collections.min(productsOfSize, Comparator.comparing(Products.Product::getPrice));
+
+                            // Calculate how many units are needed
+                            int unitsNeeded = (int) Math.ceil(remainingQuantity / size);
+                            totalCost += unitsNeeded * cheapestProduct.getPrice();
+                            remainingQuantity -= unitsNeeded * size;
+
+                            // If we have fulfilled the requested quantity, stop
+                            if (remainingQuantity <= 0) {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (remainingQuantity > 0) {
+                        System.out.println("Unable to fulfill the total quantity for " + productName + " " + quantity + ")");
+                    }
+                } else {
+                    System.out.println("No matching products found for " + productName + " in the given year and month.");
                 }
             }
         }
         return totalCost;
     }
 
+
+
     public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth) {
         Map<String, Float> inflationMap = new HashMap<>();
 
-        // Loop through all products in the start month
-        for (Products.Product startProduct : productList) {
-            // Get the date of the current product
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(startProduct.getDate());
-            int productYear = calendar.get(Calendar.YEAR);
-            int productMonth = calendar.get(Calendar.MONTH) + 1; // 0-based month, so +1
+        // Create date boundaries
+        Calendar startBoundary = Calendar.getInstance();
+        startBoundary.set(startYear, startMonth - 1, 1); // 1st of start month
+        Calendar endBoundary = Calendar.getInstance();
+        endBoundary.set(endYear, endMonth - 1, 1); // 1st of end month
 
-            // Only consider products from the start year and month
-            if (productYear != startYear || productMonth != startMonth) {
-                continue;
-            }
+        // Map to store the starting prices for each product and size
+        Map<String, Float> startPrices = new HashMap<>();
 
-            // Try to find a matching product in the end period
-            Products.Product matchingEndProduct = null;
-            for (Products.Product tempProduct : productList) {
-                // Get the date of the temp product
-                calendar.setTime(tempProduct.getDate());
-                int tempYear = calendar.get(Calendar.YEAR);
-                int tempMonth = calendar.get(Calendar.MONTH) + 1;
+        // Collect starting prices for products introduced on or before the start of the period
+        for (Products.Product product : productList) {
+            Calendar productDate = Calendar.getInstance();
+            productDate.setTime(product.getDate());
 
-                // Match by both name and size, and ensure it is in the end date range
-                if (tempProduct.getName().equals(startProduct.getName()) &&
-                        tempProduct.getSize().equals(startProduct.getSize()) &&
-                        tempYear == endYear && tempMonth == endMonth) {
-
-                    matchingEndProduct = tempProduct;  // Found matching product
-                    break;  // Exit loop if exact match found (same name and size)
+            // Only consider products introduced on or before the start boundary
+            if (productDate.compareTo(startBoundary) <= 0) {
+                String key = product.getName() + " " + product.getSize();
+                if (!startPrices.containsKey(key)) { // Store only the first instance found
+                    startPrices.put(key, product.getPrice());
+//                    System.out.println("Start Price Captured: " + key + " Price: " + product.getPrice());
                 }
             }
+        }
 
-            // If no exact size match is found, check for other sizes of the same product
-            if (matchingEndProduct == null) {
-                for (Products.Product tempProduct : productList) {
-                    // Match only by name (ignore size) and ensure it's within the end date range
-                    calendar.setTime(tempProduct.getDate());
-                    int tempYear = calendar.get(Calendar.YEAR);
-                    int tempMonth = calendar.get(Calendar.MONTH) + 1;
+        // Loop through products to find matching end prices and calculate inflation
+        for (Products.Product endProduct : productList) {
+            Calendar productDate = Calendar.getInstance();
+            productDate.setTime(endProduct.getDate());
 
-                    if (tempProduct.getName().equals(startProduct.getName()) &&
-                            tempYear == endYear && tempMonth == endMonth) {
+            // Only consider products introduced on or before the end boundary
+            if (productDate.compareTo(endBoundary) <= 0) {
+                String productKey = endProduct.getName() + " " + endProduct.getSize();
 
-                        matchingEndProduct = tempProduct;  // Found a match with a different size
-                        break;  // Exit loop if we find a different size of the same product
+                // Check if there's a start price for the current end product
+                Float startPrice = startPrices.get(productKey);
+                if (startPrice != null) {
+                    float startSizeInBaseUnits = convertToBaseUnit(getSizeFromProductNameAndSize(productKey)); // Use proper size string
+                    float endSizeInBaseUnits = convertToBaseUnit(endProduct.getSize());
+
+                    // Calculate inflation or shrinkflation
+                    float inflationRate = 0;
+                    boolean inflationCalculated = false;
+
+                    if (startSizeInBaseUnits == endSizeInBaseUnits) {
+                        // Regular cost inflation (same size)
+                        inflationRate = (endProduct.getPrice() - startPrice) / startPrice * 100;
+                        inflationCalculated = inflationRate > 0;
+                    } else {
+                        // Shrinkflation: sizes changed
+                        float startUnitCost = startPrice / startSizeInBaseUnits;
+                        float endUnitCost = endProduct.getPrice() / endSizeInBaseUnits;
+                        inflationRate = (endUnitCost - startUnitCost) / startUnitCost * 100;
+                        inflationCalculated = inflationRate > 0;
+                    }
+
+                    // Add to the inflation map if inflation rate is positive
+                    if (inflationCalculated) {
+                        inflationMap.put(productKey, inflationRate);
+                    } else {
+//                        System.out.println("No inflation for: " + productKey);
+                    }
+                } else {
+//                    System.out.println("No start price found for: " + productKey);
+                }
+            } else {
+//                System.out.println("End product " + endProduct.getName() + " " + endProduct.getSize() + " is not within the end boundary.");
+            }
+        }
+
+        if (inflationMap.isEmpty()) {
+//            System.out.println("No inflation data available.");
+        }
+
+        Map<String, Float> shrinkflationMap = calculateShrinkflation(startYear, startMonth,endYear, endMonth);
+        Map<String, Float> combinedMap = new HashMap<>();
+        if (inflationMap != null) {
+            combinedMap.putAll(inflationMap);
+        }
+        if (shrinkflationMap != null) {
+            for (Map.Entry<String, Float> entry : shrinkflationMap.entrySet()) {
+                // If the product already exists in the map (from inflation), choose how to handle it
+                combinedMap.merge(entry.getKey(), entry.getValue(), (oldValue, newValue) -> {
+                    // This lambda defines how to handle duplicates (e.g., sum or pick the max rate)
+                    return Math.max(oldValue, newValue); // You can decide to pick max, sum, etc.
+                });
+            }
+        }
+
+        return combinedMap.isEmpty() ? null : combinedMap;
+    }
+
+    public Map<String, Float> calculateShrinkflation(int startYear, int startMonth, int endYear, int endMonth) {
+        Map<String, Float> shrinkflationMap = new HashMap<>();
+
+        // Create date boundaries
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(startYear, startMonth - 1, 1); // 1st of start month
+        Date startBoundary = startCalendar.getTime(); // Convert Calendar to Date
+
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(endYear, endMonth - 1, 1); // 1st of end month
+        Date endBoundary = endCalendar.getTime(); // Convert Calendar to Date
+
+        // Maps to store the starting sizes and prices
+        Map<String, Products.Product> initialProductMap = new HashMap<>();
+        Map<String, Products.Product> newProductMap = new HashMap<>();
+
+        // Collect initial products
+        for (Products.Product product : productList) {
+            Calendar productCalendar = Calendar.getInstance();
+            productCalendar.setTime(product.getDate());
+
+            if (product.getDate().compareTo(startBoundary) <= 0) {
+                String key = product.getName() + " " + product.getSize();
+                if (!initialProductMap.containsKey(key)) {
+                    initialProductMap.put(key, product);
+                }
+            }
+        }
+
+        // Collect new products
+        for (Products.Product product : productList) {
+            Calendar productCalendar = Calendar.getInstance();
+            productCalendar.setTime(product.getDate());
+
+            if (product.getDate().compareTo(endBoundary) <= 0) {
+                String key = product.getName() + " " + product.getSize();
+                if (!newProductMap.containsKey(key)) {
+                    newProductMap.put(key, product);
+                }
+            }
+        }
+
+        // Check for shrinkflation
+        for (Map.Entry<String, Products.Product> initialEntry : initialProductMap.entrySet()) {
+            String initialKey = initialEntry.getKey();
+            Products.Product initialProduct = initialEntry.getValue();
+            String[] initialParts = initialKey.split(" ", 2);
+            String baseName = initialParts[0];
+            float initialSizeInBaseUnits = convertToBaseUnit(initialParts[1]);
+
+            boolean shrinkflationFound = false;
+            for (Map.Entry<String, Products.Product> newEntry : newProductMap.entrySet()) {
+                String newKey = newEntry.getKey();
+                Products.Product newProduct = newEntry.getValue();
+                String[] newParts = newKey.split(" ", 2);
+                String newBaseName = newParts[0];
+
+                // Check if the new product is the same but with a smaller size and introduced within the period
+                if (baseName.equals(newBaseName) && newProduct.getDate().compareTo(startBoundary) >= 0) {
+                    float newSizeInBaseUnits = convertToBaseUnit(newParts[1]);
+
+                    if (newSizeInBaseUnits < initialSizeInBaseUnits) {
+                        // Calculate per-unit costs
+                        float initialUnitCost = initialProduct.getPrice() / initialSizeInBaseUnits;
+                        float newUnitCost = newProduct.getPrice() / newSizeInBaseUnits;
+
+                        // Calculate shrinkflation rate
+                        float shrinkflationRate = (newUnitCost - initialUnitCost) / initialUnitCost * 100;
+
+                        // Check if the rate is positive (indicating shrinkflation)
+                        if (shrinkflationRate > 0) {
+                            shrinkflationMap.put(newKey, shrinkflationRate);
+                        }
+                        shrinkflationFound = true;
+                        break;
                     }
                 }
             }
 
-            if (matchingEndProduct == null) {
-                continue;
-            }
-
-            // Convert sizes to base units (to handle shrinkflation if sizes differ)
-            float startSizeInBaseUnits = convertToBaseUnit(startProduct.getSize());
-            float endSizeInBaseUnits = convertToBaseUnit(matchingEndProduct.getSize());
-
-            // Calculate inflation or shrinkflation
-            float inflationRate = 0;
-            if (startSizeInBaseUnits == endSizeInBaseUnits) {
-                // Regular cost inflation (same size)
-                inflationRate = (matchingEndProduct.getPrice() - startProduct.getPrice()) / startProduct.getPrice() * 100;
-            } else {
-                // Shrinkflation: sizes changed
-                float startUnitCost = startProduct.getPrice() / startSizeInBaseUnits;
-                float endUnitCost = matchingEndProduct.getPrice() / endSizeInBaseUnits;
-                inflationRate = (endUnitCost - startUnitCost) / startUnitCost * 100;
-            }
-
-            // Add to the inflation map
-            if(inflationRate > 0) {
-                String productKey = matchingEndProduct.getName() + " " + matchingEndProduct.getSize();
-                inflationMap.put(productKey, inflationRate);
+            if (!shrinkflationFound) {
+//                System.out.println("No shrinkflation found for: " + initialKey);
             }
         }
-        return inflationMap.isEmpty() ? null : inflationMap;
+
+        if (shrinkflationMap.isEmpty()) {
+//            System.out.println("No shrinkflation data available.");
+        }
+
+        return shrinkflationMap.isEmpty() ? null : shrinkflationMap;
     }
 
-
-    public List<String> priceInversion(int year, int month, int tolerance) {
+        public List<String> priceInversion(int year, int month, int tolerance) {
         // List to store results
         List<String> results = new ArrayList<>();
 
@@ -334,15 +482,14 @@ public class CostOfLiving {
         return results.isEmpty() ? null : results;
     }
 
-
     public List<Products.Product> findMatchingProducts(String productName, int year, int month) {
-        List<Products.Product> matchingProducts = new ArrayList<>();
+        // Map to keep track of the latest product for each size
+        Map<Float, Products.Product> latestProductsBySize = new HashMap<>();
 
-        // Loop until we find matching products or run out of months to check
-        while (year >= 0) {  // Continue until we reach an invalid year (year < 0)
+        while (year >= 0) {
             for (Products.Product product : productList) {
                 // Check if the product name matches
-                if (product.getName().toLowerCase().equals(productName.toLowerCase())) {
+                if (product.getName().equalsIgnoreCase(productName)) {
                     // Check if the product's date matches the given year and month
                     Date productDate = product.getDate();
                     Calendar calendar = Calendar.getInstance();
@@ -351,17 +498,21 @@ public class CostOfLiving {
                     int productMonth = calendar.get(Calendar.MONTH) + 1; // +1 because MONTH is 0-based
 
                     if (productYear == year && productMonth == month) {
-                        matchingProducts.add(product); // Add the product to the matching list
+                        float productSizeInBaseUnit = convertToBaseUnit(product.getSize());
+                        // Only consider products with positive sizes
+                        if (productSizeInBaseUnit > 0) {
+                            // Check if we already have a product for this size
+                            Products.Product existingProduct = latestProductsBySize.get(productSizeInBaseUnit);
+                            if (existingProduct == null || productDate.after(existingProduct.getDate())) {
+                                // Update to the latest product for this size
+                                latestProductsBySize.put(productSizeInBaseUnit, product);
+                            }
+                        }
                     }
                 }
             }
 
-            // If we found matching products, return them
-            if (!matchingProducts.isEmpty()) {
-                return matchingProducts;
-            }
-
-            // Otherwise, move to the previous month
+            // Move to the previous month
             month--;
             if (month == 0) {
                 // If we reach month 0, move to the previous year and set the month to December (12)
@@ -370,10 +521,28 @@ public class CostOfLiving {
             }
         }
 
-        // Return an empty list if no matches are found
-        return matchingProducts;
+        // Convert map values to a list
+        List<Products.Product> latestProducts = new ArrayList<>(latestProductsBySize.values());
+
+        return latestProducts;
     }
 
+    // Helper method to filter out products with a cost of 0 on or before the given date
+    private List<Products.Product> filterOutZeroCostProducts(List<Products.Product> products, int year, int month) {
+        List<Products.Product> filteredProducts = new ArrayList<>();
+        for (Products.Product product : products) {
+            Date productDate = product.getDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(productDate);
+            int productYear = calendar.get(Calendar.YEAR);
+            int productMonth = calendar.get(Calendar.MONTH) + 1; // MONTH is 0-based
+
+            if (product.getPrice() > 0 || (productYear > year || (productYear == year && productMonth > month))) {
+                filteredProducts.add(product);
+            }
+        }
+        return filteredProducts;
+    }
 
     private float convertToBaseUnit(String size) {
         size = size.toLowerCase().trim(); // Convert to lowercase and remove extra spaces
@@ -399,4 +568,15 @@ public class CostOfLiving {
             return -1; // Handle the error as necessary
         }
     }
+
+    // Helper function to extract size from a product key
+    private String getSizeFromProductNameAndSize(String key) {
+        // Split the key by space and get the size part
+        String[] parts = key.split(" ");
+        if (parts.length >= 2) {
+            return String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
+        }
+        return "";
+    }
+
 }

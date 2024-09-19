@@ -26,7 +26,7 @@ public class Main {
             if(cartID > 0){
                 System.out.println("Loaded shopping cart with ID: "+cartID);
 //                System.out.println("Shopping cart cost: "+costOfLiving.shoppingCartCost(cartID, 2024, 01));
-                System.out.printf("Shopping cart cost: %.2f%n", costOfLiving.shoppingCartCost(cartID, 2024, 02));
+                System.out.printf("Shopping cart cost: %.2f%n", costOfLiving.shoppingCartCost(cartID, 2024, 10));
             } else {
                 System.out.println("Error loading shopping cart");
             }
@@ -34,7 +34,7 @@ public class Main {
             System.out.println("Error in shopping cart file: " +e.getMessage());
         }
 
-        Map<String, Float> inflationReport = costOfLiving.inflation(2024, 1, 2024, 2);
+        Map<String, Float> inflationReport = costOfLiving.inflation(2024, 1, 2024, 9);
         if (inflationReport != null) {
             System.out.println("Inflation Report");
             for (Map.Entry<String, Float> entry : inflationReport.entrySet()) {
@@ -46,7 +46,7 @@ public class Main {
 
         System.out.println();
 
-        List<String> priceInversionReport = costOfLiving.priceInversion(2024, 2, 5);
+        List<String> priceInversionReport = costOfLiving.priceInversion(2024, 9, 5);
         if (priceInversionReport != null) {
             System.out.println("Price Inversions:");
             for (String inversion : priceInversionReport) {

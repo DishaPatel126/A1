@@ -1,5 +1,1 @@
-Apple Juice	500 ml	2 l
-Water	1.5 l	2 l
-Honey	500 g	2.5 kg
-Milk	2 l	6 l
-Tea	100 g	200 g
+Milk	1 l

@@ -1,6 +1,234 @@
 public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth) {
         Map<String, Float> inflationMap = new HashMap<>();
 
+        // Create date boundaries
+        Calendar startBoundary = Calendar.getInstance();
+        startBoundary.set(startYear, startMonth - 1, 1); // 1st of start month
+        Calendar endBoundary = Calendar.getInstance();
+        endBoundary.set(endYear, endMonth - 1, 1); // 1st of end month
+
+        // Map to store the starting prices for each product and size
+        Map<String, Float> startPrices = new HashMap<>();
+
+        // Collect starting prices for products introduced on or before the start of the period
+        for (Products.Product product : productList) {
+            Calendar productDate = Calendar.getInstance();
+            productDate.setTime(product.getDate());
+
+            // Only consider products introduced on or before the start boundary
+            if (productDate.compareTo(startBoundary) <= 0) {
+                String key = product.getName() + " " + product.getSize();
+                if (!startPrices.containsKey(key)) { // Store only the first instance found
+                    startPrices.put(key, product.getPrice());
+//                    System.out.println("Start Price Captured: " + key + " Price: " + product.getPrice());
+                }
+            }
+        }
+
+        // Loop through products to find matching end prices and calculate inflation
+        for (Products.Product endProduct : productList) {
+            Calendar productDate = Calendar.getInstance();
+            productDate.setTime(endProduct.getDate());
+
+            // Only consider products introduced on or before the end boundary
+            if (productDate.compareTo(endBoundary) <= 0) {
+                String productKey = endProduct.getName() + " " + endProduct.getSize();
+
+                // Check if there's a start price for the current end product
+                Float startPrice = startPrices.get(productKey);
+                if (startPrice != null) {
+                    float startSizeInBaseUnits = convertToBaseUnit(getSizeFromProductNameAndSize(productKey)); // Use proper size string
+                    float endSizeInBaseUnits = convertToBaseUnit(endProduct.getSize());
+
+                    // Calculate inflation or shrinkflation
+                    float inflationRate = 0;
+                    boolean inflationCalculated = false;
+
+                    if (startSizeInBaseUnits == endSizeInBaseUnits) {
+                        // Regular cost inflation (same size)
+                        inflationRate = (endProduct.getPrice() - startPrice) / startPrice * 100;
+                        inflationCalculated = inflationRate > 0;
+                    } else {
+                        // Shrinkflation: sizes changed
+                        float startUnitCost = startPrice / startSizeInBaseUnits;
+                        float endUnitCost = endProduct.getPrice() / endSizeInBaseUnits;
+                        inflationRate = (endUnitCost - startUnitCost) / startUnitCost * 100;
+                        inflationCalculated = inflationRate > 0;
+                    }
+
+                    // Add to the inflation map if inflation rate is positive
+                    if (inflationCalculated) {
+                        inflationMap.put(productKey, inflationRate);
+//                        System.out.println("Inflation Calculated: " + productKey + " Rate: " + inflationRate);
+                    } else {
+//                        System.out.println("No inflation for: " + productKey);
+                    }
+                } else {
+//                    System.out.println("No start price found for: " + productKey);
+                }
+            } else {
+//                System.out.println("End product " + endProduct.getName() + " " + endProduct.getSize() + " is not within the end boundary.");
+            }
+        }
+
+        if (inflationMap.isEmpty()) {
+//            System.out.println("No inflation data available.");
+        }
+
+        Map<String, Float> shrinkflationMap = calculateShrinkflation(startYear, startMonth,endYear, endMonth);
+
+        return inflationMap.isEmpty() ? null : (inflationMap + shrinkflationMap);
+    }
+
+    public Map<String, Float> calculateShrinkflation(int startYear, int startMonth, int endYear, int endMonth) {
+        Map<String, Float> shrinkflationMap = new HashMap<>();
+
+        // Create date boundaries
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(startYear, startMonth - 1, 1); // 1st of start month
+        Date startBoundary = startCalendar.getTime(); // Convert Calendar to Date
+
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(endYear, endMonth - 1, 1); // 1st of end month
+        Date endBoundary = endCalendar.getTime(); // Convert Calendar to Date
+
+        // Maps to store the starting sizes and prices
+        Map<String, Products.Product> initialProductMap = new HashMap<>();
+        Map<String, Products.Product> newProductMap = new HashMap<>();
+
+        // Collect initial products
+        for (Products.Product product : productList) {
+            Calendar productCalendar = Calendar.getInstance();
+            productCalendar.setTime(product.getDate());
+
+            if (product.getDate().compareTo(startBoundary) <= 0) {
+                String key = product.getName() + " " + product.getSize();
+                if (!initialProductMap.containsKey(key)) {
+                    initialProductMap.put(key, product);
+                    System.out.println("Initial Product Captured: " + key + " Price: " + product.getPrice());
+                }
+            }
+        }
+
+        // Collect new products
+        for (Products.Product product : productList) {
+            Calendar productCalendar = Calendar.getInstance();
+            productCalendar.setTime(product.getDate());
+
+            if (product.getDate().compareTo(endBoundary) <= 0) {
+                String key = product.getName() + " " + product.getSize();
+                if (!newProductMap.containsKey(key)) {
+                    newProductMap.put(key, product);
+                    System.out.println("New Product Captured: " + key + " Price: " + product.getPrice());
+                }
+            }
+        }
+
+        // Check for shrinkflation
+        for (Map.Entry<String, Products.Product> initialEntry : initialProductMap.entrySet()) {
+            String initialKey = initialEntry.getKey();
+            Products.Product initialProduct = initialEntry.getValue();
+            String[] initialParts = initialKey.split(" ", 2);
+            String baseName = initialParts[0];
+            float initialSizeInBaseUnits = convertToBaseUnit(initialParts[1]);
+
+            boolean shrinkflationFound = false;
+            for (Map.Entry<String, Products.Product> newEntry : newProductMap.entrySet()) {
+                String newKey = newEntry.getKey();
+                Products.Product newProduct = newEntry.getValue();
+                String[] newParts = newKey.split(" ", 2);
+                String newBaseName = newParts[0];
+
+                // Check if the new product is the same but with a smaller size and introduced within the period
+                if (baseName.equals(newBaseName) && newProduct.getDate().compareTo(startBoundary) >= 0) {
+                    float newSizeInBaseUnits = convertToBaseUnit(newParts[1]);
+
+                    // Debugging: Print the sizes and check if the new size is smaller
+                    System.out.println("Comparing sizes: Initial (" + initialSizeInBaseUnits + " units) vs New (" + newSizeInBaseUnits + " units)");
+
+                    if (newSizeInBaseUnits < initialSizeInBaseUnits) {
+                        // Calculate per-unit costs
+                        float initialUnitCost = initialProduct.getPrice() / initialSizeInBaseUnits;
+                        float newUnitCost = newProduct.getPrice() / newSizeInBaseUnits;
+
+                        // Debugging: Print the unit costs
+                        System.out.println("Initial Unit Cost: " + initialUnitCost);
+                        System.out.println("New Unit Cost: " + newUnitCost);
+
+                        // Calculate shrinkflation rate
+                        float shrinkflationRate = (newUnitCost - initialUnitCost) / initialUnitCost * 100;
+
+                        // Check if the rate is positive (indicating shrinkflation)
+                        if (shrinkflationRate > 0) {
+                            shrinkflationMap.put(newKey, shrinkflationRate);
+                            System.out.println("Shrinkflation Calculated: " + newKey + " Rate: " + shrinkflationRate);
+                        }
+                        shrinkflationFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!shrinkflationFound) {
+                System.out.println("No shrinkflation found for: " + initialKey);
+            }
+        }
+
+        if (shrinkflationMap.isEmpty()) {
+            System.out.println("No shrinkflation data available.");
+        }
+
+        return shrinkflationMap.isEmpty() ? null : shrinkflationMap;
+    }
+
+    // Helper function to extract size from a product key
+    private String getSizeFromProductNameAndSize(String key) {
+        // Split the key by space and get the size part
+        String[] parts = key.split(" ");
+        if (parts.length >= 2) {
+            return String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
+        }
+        return "";
+    }
+
+
+
+
+
+
+
+2024/01/01	Apple Juice	500 ml	1.49
+2024/01/02	Apple Juice	1 l	3.99
+2024/01/15	Water	1.5 l	1.99
+2024/01/20	Honey	500 g	4.99
+2024/01/05	Milk	2 l	4.99
+2024/01/27	Tea	100 g	2.99
+2024/01/10	Orange Juice	500 ml	2.49
+2024/02/02	Apple Juice	500 ml	1.55
+2024/02/02	Apple Juice	1 l	4.99
+2024/02/14	Water	2 l	2.99
+2024/02/22	Honey	500 g	4.99
+2024/02/05	Milk	1.5 l	4.99
+2024/02/11	Orange Juice	500 ml	0
+2024/02/11	Flour	1 kg	3.5
+2024/02/11	Flour	5 kg	20
+
+
+
+Apple Juice	500 ml	2 l
+Water	1.5 l	2 l
+Honey	500 g	2.5 kg
+Milk	2 l	6 l
+Tea	100 g	200 g
+
+
+
+
+
+
+public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth) {
+        Map<String, Float> inflationMap = new HashMap<>();
+
         // Loop through all products
         for (Products.Product startProduct : productList) {
             // Find products at the start of the period

@@ -5,10 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b166c12f-7a54-45b9-b281-277de64d3bc0" name="Changes" comment="created repository">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/loadProductHistoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/loadShoppingCartTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/A1.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CostOfLiving.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CostOfLiving.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/extra.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/productList.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/productList.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shoppingCart.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/shoppingCart.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +24,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="JUnit5 Test Class" />
         <option value="Class" />
       </list>
     </option>
@@ -49,10 +56,29 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Main.executor": "Run",
+    "Downloaded.Files.Path": "C:\\Users\\disha\\IdeaProjects\\A1\\test",
+    "Downloaded.Files.Path.Enabled": "true",
+    "JUnit.CostOfLivingTest.endlingBlanksProductStream.executor": "Run",
+    "JUnit.CostOfLivingTest.executor": "Run",
+    "JUnit.CostOfLivingTest.invalidUnits.executor": "Run",
+    "JUnit.CostOfLivingTest.negativeCost.executor": "Run",
+    "JUnit.CostOfLivingTest.negativeQuantity.executor": "Run",
+    "JUnit.CostOfLivingTest.nullProductStream.executor": "Run",
+    "JUnit.CostOfLivingTest.tooFewFieldsProductStream.executor": "Run",
+    "JUnit.CostOfLivingTest.tooManyFieldsProductStream.executor": "Run",
+    "JUnit.CostOfLivingTest.zeroQuantity.executor": "Run",
+    "JUnit.loadShoppingCartTest.executor": "Run",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "create.test.in.the.same.root": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
+    "last_directory_selection": "C:/Users/disha/IdeaProjects/A1/test",
     "last_opened_file_path": "C:/Users/disha/OneDrive/Desktop/Dalhousie/Term 1/SDC/Assignment 1/loadShoppingCartTest.java",
     "onboarding.tips.debug.path": "C:/Users/disha/IdeaProjects/A1/src/Main.java",
     "project.structure.last.edited": "SDKs",
@@ -61,6 +87,14 @@
     "settings.editor.selected.configurable": "preferences.updates"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Main" />
@@ -69,9 +103,53 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="CostOfLivingTest.endlingBlanksProductStream" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="A1" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
+      <option name="METHOD_NAME" value="endlingBlanksProductStream" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CostOfLivingTest.invalidUnits" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="A1" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
+      <option name="METHOD_NAME" value="invalidUnits" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CostOfLivingTest.negativeCost" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="A1" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
+      <option name="METHOD_NAME" value="negativeCost" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CostOfLivingTest.zeroQuantity" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="A1" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
+      <option name="METHOD_NAME" value="zeroQuantity" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
+        <item itemvalue="JUnit.CostOfLivingTest.invalidUnits" />
+        <item itemvalue="JUnit.CostOfLivingTest.endlingBlanksProductStream" />
+        <item itemvalue="JUnit.CostOfLivingTest.negativeCost" />
+        <item itemvalue="JUnit.CostOfLivingTest.zeroQuantity" />
       </list>
     </recent_temporary>
   </component>
@@ -109,5 +187,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="created repository" />
     <option name="LAST_COMMIT_MESSAGE" value="created repository" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.IllegalArgumentException" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
