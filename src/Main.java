@@ -36,11 +36,24 @@ public class Main {
 
         Map<String, Float> inflationReport = costOfLiving.inflation(2024, 1, 2024, 2);
         if (inflationReport != null) {
+            System.out.println("Inflation Report");
             for (Map.Entry<String, Float> entry : inflationReport.entrySet()) {
                 System.out.println("Product: " + entry.getKey() + ", Inflation: " + (entry.getValue()) + "%");
             }
         } else {
             System.out.println("No inflation data available.");
+        }
+
+        System.out.println();
+
+        List<String> priceInversionReport = costOfLiving.priceInversion(2024, 2, 5);
+        if (priceInversionReport != null) {
+            System.out.println("Price Inversions:");
+            for (String inversion : priceInversionReport) {
+                System.out.println(inversion);
+            }
+        } else {
+            System.out.println("No price inversions found.");
         }
 
 

@@ -280,8 +280,60 @@ public class CostOfLiving {
 
 
     public List<String> priceInversion(int year, int month, int tolerance) {
-        return null;
+        // List to store results
+        List<String> results = new ArrayList<>();
+
+        // Filter products by the specified year and month
+        List<Products.Product> filteredProducts = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+
+        for (Products.Product product : productList) {
+            calendar.setTime(product.getDate());
+            int productYear = calendar.get(Calendar.YEAR);
+            int productMonth = calendar.get(Calendar.MONTH) + 1;
+
+            if (productYear == year && productMonth == month) {
+                filteredProducts.add(product);
+            }
+        }
+
+        // Group products by name
+        Map<String, List<Products.Product>> productGroups = new HashMap<>();
+        for (Products.Product product : filteredProducts) {
+            String productName = product.getName().toLowerCase();
+            productGroups.computeIfAbsent(productName, k -> new ArrayList<>()).add(product);
+        }
+
+        // Iterate over each product group
+        for (Map.Entry<String, List<Products.Product>> entry : productGroups.entrySet()) {
+            String productName = entry.getKey();
+            List<Products.Product> products = entry.getValue();
+
+            // Sort products by size (converted to base unit) ascending
+            products.sort(Comparator.comparing(p -> convertToBaseUnit(p.getSize())));
+
+            for (int i = 0; i < products.size(); i++) {
+                for (int j = i + 1; j < products.size(); j++) {
+                    Products.Product larger = products.get(j);
+                    Products.Product smaller = products.get(i);
+
+                    float largerUnitCost = larger.getPrice() / convertToBaseUnit(larger.getSize());
+                    float smallerUnitCost = smaller.getPrice() / convertToBaseUnit(smaller.getSize());
+
+                    float percentageDifference = ((largerUnitCost -smallerUnitCost) / largerUnitCost) * 100;
+
+                    if (percentageDifference > tolerance) {
+                        String result = productName + "\t" + larger.getSize() + "\t" + smaller.getSize();
+                        results.add(result);
+                    }
+                }
+            }
+        }
+
+        // Return the results, or null if no results
+        return results.isEmpty() ? null : results;
     }
+
 
     public List<Products.Product> findMatchingProducts(String productName, int year, int month) {
         List<Products.Product> matchingProducts = new ArrayList<>();
