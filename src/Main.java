@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -43,9 +41,6 @@ public class Main {
         } else {
             System.out.println("No inflation data available.");
         }
-
-        System.out.println();
-
         List<String> priceInversionReport = costOfLiving.priceInversion(2024, 9, 5);
         if (priceInversionReport != null) {
             System.out.println("Price Inversions:");

@@ -5,16 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b166c12f-7a54-45b9-b281-277de64d3bc0" name="Changes" comment="created repository">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/loadProductHistoryTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/loadShoppingCartTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/A1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/A1.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CostOfLiving.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CostOfLiving.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/extra.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/extra.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/productList.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/productList.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/shoppingCart.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/shoppingCart.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +60,14 @@
     "JUnit.CostOfLivingTest.tooFewFieldsProductStream.executor": "Run",
     "JUnit.CostOfLivingTest.tooManyFieldsProductStream.executor": "Run",
     "JUnit.CostOfLivingTest.zeroQuantity.executor": "Run",
+    "JUnit.loadShoppingCartTest.emptyCartStream.executor": "Run",
+    "JUnit.loadShoppingCartTest.emptyProductName.executor": "Run",
     "JUnit.loadShoppingCartTest.executor": "Run",
+    "JUnit.loadShoppingCartTest.negativeQuantity.executor": "Run",
+    "JUnit.loadShoppingCartTest.noSpaceInSize.executor": "Run",
+    "JUnit.loadShoppingCartTest.nullCartStream.executor": "Run",
+    "JUnit.loadShoppingCartTest.spacesAsSize.executor": "Run",
+    "JUnit.loadShoppingCartTest.zeroQuantity.executor": "Run",
     "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "false",
     "Repository.Attach.Sources": "false",
@@ -96,47 +96,50 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Main" />
-      <module name="A1" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="CostOfLivingTest.endlingBlanksProductStream" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="loadShoppingCartTest.emptyProductName" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
-      <option name="METHOD_NAME" value="endlingBlanksProductStream" />
+      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
+      <option name="METHOD_NAME" value="emptyProductName" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CostOfLivingTest.invalidUnits" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="loadShoppingCartTest.negativeQuantity" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
-      <option name="METHOD_NAME" value="invalidUnits" />
+      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
+      <option name="METHOD_NAME" value="negativeQuantity" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CostOfLivingTest.negativeCost" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="loadShoppingCartTest.noSpaceInSize" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
-      <option name="METHOD_NAME" value="negativeCost" />
+      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
+      <option name="METHOD_NAME" value="noSpaceInSize" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="CostOfLivingTest.zeroQuantity" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="loadShoppingCartTest.spacesAsSize" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="CostOfLivingTest" />
+      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
+      <option name="METHOD_NAME" value="spacesAsSize" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="loadShoppingCartTest.zeroQuantity" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="A1" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
       <option name="METHOD_NAME" value="zeroQuantity" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
@@ -145,11 +148,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Main" />
-        <item itemvalue="JUnit.CostOfLivingTest.invalidUnits" />
-        <item itemvalue="JUnit.CostOfLivingTest.endlingBlanksProductStream" />
-        <item itemvalue="JUnit.CostOfLivingTest.negativeCost" />
-        <item itemvalue="JUnit.CostOfLivingTest.zeroQuantity" />
+        <item itemvalue="JUnit.loadShoppingCartTest.noSpaceInSize" />
+        <item itemvalue="JUnit.loadShoppingCartTest.spacesAsSize" />
+        <item itemvalue="JUnit.loadShoppingCartTest.emptyProductName" />
+        <item itemvalue="JUnit.loadShoppingCartTest.zeroQuantity" />
+        <item itemvalue="JUnit.loadShoppingCartTest.negativeQuantity" />
       </list>
     </recent_temporary>
   </component>

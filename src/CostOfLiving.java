@@ -128,43 +128,66 @@ public class CostOfLiving {
 
     //Method to load the shopping cart list from file
     public int loadShoppingCart(BufferedReader cartStream) {
+        if (cartStream == null) {
+            System.out.println("Error: Null shopping cart stream");
+            return -1;  // Return negative value to indicate error
+        }
+
         try {
             String line;
-            // Mapping the product name to size and the total desired quantity (e.g. "2 l" or "2.5 kg")
             Map<String, Float> cart = new HashMap<>();
 
-            // Reading each line from the file and splitting into parts
             while ((line = cartStream.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;  // Skip empty lines
+                }
+
                 String[] parts = line.split("\t");
                 if (parts.length != 2) {
                     System.out.println("Invalid line format: " + line);
-                    return -1;
+                    return -1;  // Error for incorrect line format
                 }
 
-                String productName = parts[0].trim().toLowerCase();  // Product name
-                String totalQuantityStr = parts[1].trim().toLowerCase(); // Desired total quantity (e.g. "2 l", "2.5 kg")
+                String productName = parts[0].trim().toLowerCase();  // Trim the product name
+                String totalQuantityStr = parts[1].trim().toLowerCase();  // Trim the size/quantity
+
+                // Check for empty or space-only product name
+                if (productName.isEmpty()) {
+                    System.out.println("Invalid product name (empty or spaces): " + productName);
+                    return -1;  // Error for empty or space-only product name
+                }
+
+                // Check for empty or space-only size
+                if (totalQuantityStr.isEmpty()) {
+                    System.out.println("Invalid size (empty or spaces): " + totalQuantityStr);
+                    return -1;  // Error for empty or space-only size
+                }
+
+                // Validate size format (must contain a space between quantity and unit)
+                if (!totalQuantityStr.matches("\\d+(\\.\\d+)?\\s+[a-zA-Z]+")) {
+                    System.out.println("Invalid size format (should be 'number unit'): " + totalQuantityStr);
+                    return -1;  // Error for improperly formatted size
+                }
 
                 try {
-                    // Convert total quantity to a float in the same unit as the size (e.g., "2 l" -> 2.0)
                     float totalQuantity = convertToBaseUnit(totalQuantityStr);
 
-                    // Store the desired total quantity for this product size
-                    cart.put(productName, totalQuantity);
+                    // Check for negative or zero quantities
+                    if (totalQuantity <= 0) {
+                        System.out.println("Invalid total quantity (zero or negative value): " + totalQuantityStr);
+                        return -1;  // Error for zero or negative quantities
+                    }
 
+                    cart.put(productName, totalQuantity);
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid total quantity: " + totalQuantityStr);
-                    return -1;
+                    return -1;  // Error for invalid quantity format
                 }
             }
 
-            if (cart.isEmpty()) {
-                System.out.println("Shopping cart is empty");
-                return -1;
-            }
-
-            // Add the cart to the map
+            // Add the cart to the map and return cartID
             carts.put(cartID, cart);
-            return cartID++;
+            return cartID++;  // Return current cartID and increment it
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,15 +195,27 @@ public class CostOfLiving {
         }
     }
 
-
     float shoppingCartCost(int cartNumber, int year, int month) {
         float totalCost = 0.0f;
+
+        // Validate cart number
+        if (cartNumber < 0 || !carts.containsKey(cartNumber)) {
+            System.out.println("Error: Invalid shopping cart number: " + cartNumber);
+            return -1;  // Indicate an error
+        }
+
         Map<String, Float> cart = carts.get(cartNumber); // Cart map with product name and required quantity
 
-        if (cart != null) {
+        if (cart != null && !cart.isEmpty()) {
             for (Map.Entry<String, Float> entry : cart.entrySet()) {
                 String productName = entry.getKey();
                 float quantity = entry.getValue();
+
+                // Validate quantity
+                if (quantity <= 0) {
+                    System.out.println("Error: Invalid quantity for " + productName + ": " + quantity);
+                    return -1;  // Indicate an error
+                }
 
                 // Find the latest matching products for the given product name
                 List<Products.Product> matchingProducts = findMatchingProducts(productName, year, month);
@@ -196,6 +231,12 @@ public class CostOfLiving {
                         if (productSizeInBaseUnit > 0) {
                             sizeToProducts.computeIfAbsent(productSizeInBaseUnit, k -> new ArrayList<>()).add(product);
                         }
+                    }
+
+                    // Check if we have any valid sizes
+                    if (sizeToProducts.isEmpty()) {
+                        System.out.println("No valid sizes available for " + productName);
+                        continue;  // Skip to the next product
                     }
 
                     // Convert size-to-products map to a sorted list by price per unit size
@@ -230,20 +271,28 @@ public class CostOfLiving {
                     }
 
                     if (remainingQuantity > 0) {
-                        System.out.println("Unable to fulfill the total quantity for " + productName + " " + quantity + ")");
+                        System.out.println("Unable to fulfill the total quantity for " + productName + ": requested " + quantity + ", fulfilled " + (quantity - remainingQuantity));
                     }
                 } else {
                     System.out.println("No matching products found for " + productName + " in the given year and month.");
                 }
             }
+        } else {
+            System.out.println("The shopping cart is empty or does not exist.");
+            return -1;  // Indicate an error for empty cart
         }
+
         return totalCost;
     }
 
-
-
     public Map<String, Float> inflation(int startYear, int startMonth, int endYear, int endMonth) {
         Map<String, Float> inflationMap = new HashMap<>();
+
+        // Validate input months and years
+        if (startYear < 0 || endYear < 0 || startMonth < 1 || startMonth > 12 || endMonth < 1 || endMonth > 12) {
+            System.out.println("Error: Invalid date range provided.");
+            return null;  // Indicate an error
+        }
 
         // Create date boundaries
         Calendar startBoundary = Calendar.getInstance();
@@ -264,7 +313,6 @@ public class CostOfLiving {
                 String key = product.getName() + " " + product.getSize();
                 if (!startPrices.containsKey(key)) { // Store only the first instance found
                     startPrices.put(key, product.getPrice());
-//                    System.out.println("Start Price Captured: " + key + " Price: " + product.getPrice());
                 }
             }
         }
@@ -303,8 +351,6 @@ public class CostOfLiving {
                     // Add to the inflation map if inflation rate is positive
                     if (inflationCalculated) {
                         inflationMap.put(productKey, inflationRate);
-                    } else {
-//                        System.out.println("No inflation for: " + productKey);
                     }
                 } else {
 //                    System.out.println("No start price found for: " + productKey);
@@ -314,26 +360,23 @@ public class CostOfLiving {
             }
         }
 
+        // Check if there is no inflation data
         if (inflationMap.isEmpty()) {
-//            System.out.println("No inflation data available.");
+            System.out.println("No inflation data available.");
         }
 
-        Map<String, Float> shrinkflationMap = calculateShrinkflation(startYear, startMonth,endYear, endMonth);
-        Map<String, Float> combinedMap = new HashMap<>();
-        if (inflationMap != null) {
-            combinedMap.putAll(inflationMap);
-        }
+        // Calculate shrinkflation and merge with inflation map
+        Map<String, Float> shrinkflationMap = calculateShrinkflation(startYear, startMonth, endYear, endMonth);
+        Map<String, Float> combinedMap = new HashMap<>(inflationMap); // Initialize with inflation data
+
         if (shrinkflationMap != null) {
             for (Map.Entry<String, Float> entry : shrinkflationMap.entrySet()) {
-                // If the product already exists in the map (from inflation), choose how to handle it
-                combinedMap.merge(entry.getKey(), entry.getValue(), (oldValue, newValue) -> {
-                    // This lambda defines how to handle duplicates (e.g., sum or pick the max rate)
-                    return Math.max(oldValue, newValue); // You can decide to pick max, sum, etc.
-                });
+                // If the product already exists in the map (from inflation), handle it
+                combinedMap.merge(entry.getKey(), entry.getValue(), Math::max); // Choose how to handle duplicates
             }
         }
 
-        return combinedMap.isEmpty() ? null : combinedMap;
+        return combinedMap.isEmpty() ? null : combinedMap; // Return null if combined map is empty
     }
 
     public Map<String, Float> calculateShrinkflation(int startYear, int startMonth, int endYear, int endMonth) {
@@ -427,7 +470,13 @@ public class CostOfLiving {
         return shrinkflationMap.isEmpty() ? null : shrinkflationMap;
     }
 
-        public List<String> priceInversion(int year, int month, int tolerance) {
+    public List<String> priceInversion(int year, int month, int tolerance) {
+        // Validate input for year, month, and tolerance
+        if (year < 0 || month < 1 || month > 12 || tolerance < 0) {
+            System.out.println("Error: Invalid input for year, month, or tolerance.");
+            return null;  // Indicate an error
+        }
+
         // List to store results
         List<String> results = new ArrayList<>();
 
@@ -468,19 +517,29 @@ public class CostOfLiving {
                     float largerUnitCost = larger.getPrice() / convertToBaseUnit(larger.getSize());
                     float smallerUnitCost = smaller.getPrice() / convertToBaseUnit(smaller.getSize());
 
-                    float percentageDifference = ((largerUnitCost -smallerUnitCost) / largerUnitCost) * 100;
+                    // Ensure both unit costs are positive to avoid division by zero
+                    if (largerUnitCost > 0 && smallerUnitCost > 0) {
+                        float percentageDifference = ((largerUnitCost - smallerUnitCost) / largerUnitCost) * 100;
 
-                    if (percentageDifference > tolerance) {
-                        String result = productName + "\t" + larger.getSize() + "\t" + smaller.getSize();
-                        results.add(result);
+                        if (percentageDifference > tolerance) {
+                            String result = productName + "\t" + larger.getSize() + "\t" + smaller.getSize();
+                            results.add(result);
+                        }
+                    } else {
+                        System.out.println("Warning: Encountered non-positive unit cost for products: " + larger.getName() + " and " + smaller.getName());
                     }
                 }
             }
         }
 
         // Return the results, or null if no results
+        if (results.isEmpty()) {
+            System.out.println("No price inversion results found.");
+        }
+
         return results.isEmpty() ? null : results;
     }
+
 
     public List<Products.Product> findMatchingProducts(String productName, int year, int month) {
         // Map to keep track of the latest product for each size
