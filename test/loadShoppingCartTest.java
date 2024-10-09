@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 class loadShoppingCartTest {
 
     @Test

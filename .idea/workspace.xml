@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b166c12f-7a54-45b9-b281-277de64d3bc0" name="Changes" comment="created repository">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CostOfLiving.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CostOfLiving.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/A1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ShoppingCarts.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ShoppingCarts.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,47 +46,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "Downloaded.Files.Path": "C:\\Users\\disha\\IdeaProjects\\A1\\test",
-    "Downloaded.Files.Path.Enabled": "true",
-    "JUnit.CostOfLivingTest.endlingBlanksProductStream.executor": "Run",
-    "JUnit.CostOfLivingTest.executor": "Run",
-    "JUnit.CostOfLivingTest.invalidUnits.executor": "Run",
-    "JUnit.CostOfLivingTest.negativeCost.executor": "Run",
-    "JUnit.CostOfLivingTest.negativeQuantity.executor": "Run",
-    "JUnit.CostOfLivingTest.nullProductStream.executor": "Run",
-    "JUnit.CostOfLivingTest.tooFewFieldsProductStream.executor": "Run",
-    "JUnit.CostOfLivingTest.tooManyFieldsProductStream.executor": "Run",
-    "JUnit.CostOfLivingTest.zeroQuantity.executor": "Run",
-    "JUnit.loadShoppingCartTest.emptyCartStream.executor": "Run",
-    "JUnit.loadShoppingCartTest.emptyProductName.executor": "Run",
-    "JUnit.loadShoppingCartTest.executor": "Run",
-    "JUnit.loadShoppingCartTest.negativeQuantity.executor": "Run",
-    "JUnit.loadShoppingCartTest.noSpaceInSize.executor": "Run",
-    "JUnit.loadShoppingCartTest.nullCartStream.executor": "Run",
-    "JUnit.loadShoppingCartTest.spacesAsSize.executor": "Run",
-    "JUnit.loadShoppingCartTest.zeroQuantity.executor": "Run",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "create.test.in.the.same.root": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_directory_selection": "C:/Users/disha/IdeaProjects/A1/test",
-    "last_opened_file_path": "C:/Users/disha/OneDrive/Desktop/Dalhousie/Term 1/SDC/Assignment 1/loadShoppingCartTest.java",
-    "onboarding.tips.debug.path": "C:/Users/disha/IdeaProjects/A1/src/Main.java",
-    "project.structure.last.edited": "SDKs",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.updates"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.A1.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Downloaded.Files.Path&quot;: &quot;C:\\Users\\disha\\IdeaProjects\\A1\\test&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
+    &quot;JUnit.CostOfLivingTest.endlingBlanksProductStream.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.invalidUnits.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.negativeCost.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.negativeQuantity.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.nullProductStream.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.tooFewFieldsProductStream.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.tooManyFieldsProductStream.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.CostOfLivingTest.zeroQuantity.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.emptyCartStream.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.emptyProductName.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.negativeQuantity.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.noSpaceInSize.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.nullCartStream.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.spacesAsSize.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.loadShoppingCartTest.zeroQuantity.executor&quot;: &quot;Run&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;create.test.in.the.same.root&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;C:/Users/disha/IdeaProjects/A1/test&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/disha/IdeaProjects/Lab2_2&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/disha/IdeaProjects/A1/src/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.updates&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -95,64 +96,59 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager">
-    <configuration name="loadShoppingCartTest.emptyProductName" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.inflationTest">
+    <configuration name="inflationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
-      <option name="METHOD_NAME" value="emptyProductName" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="MAIN_CLASS_NAME" value="inflationTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="loadShoppingCartTest.negativeQuantity" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="loadProductHistoryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
-      <option name="METHOD_NAME" value="negativeQuantity" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="MAIN_CLASS_NAME" value="loadProductHistoryTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="loadShoppingCartTest.noSpaceInSize" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="loadShoppingCartTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
       <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
-      <option name="METHOD_NAME" value="noSpaceInSize" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="loadShoppingCartTest.spacesAsSize" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="priceInversionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
-      <option name="METHOD_NAME" value="spacesAsSize" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="MAIN_CLASS_NAME" value="priceInversionTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="loadShoppingCartTest.zeroQuantity" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="shoppingCartCostTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="A1" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="loadShoppingCartTest" />
-      <option name="METHOD_NAME" value="zeroQuantity" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="MAIN_CLASS_NAME" value="shoppingCartCostTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.loadShoppingCartTest.noSpaceInSize" />
-        <item itemvalue="JUnit.loadShoppingCartTest.spacesAsSize" />
-        <item itemvalue="JUnit.loadShoppingCartTest.emptyProductName" />
-        <item itemvalue="JUnit.loadShoppingCartTest.zeroQuantity" />
-        <item itemvalue="JUnit.loadShoppingCartTest.negativeQuantity" />
+        <item itemvalue="JUnit.inflationTest" />
+        <item itemvalue="JUnit.shoppingCartCostTest" />
+        <item itemvalue="JUnit.priceInversionTest" />
+        <item itemvalue="JUnit.loadShoppingCartTest" />
+        <item itemvalue="JUnit.loadProductHistoryTest" />
       </list>
     </recent_temporary>
   </component>

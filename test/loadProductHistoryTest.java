@@ -1,11 +1,10 @@
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 
-import static org.junit.jupiter.api.Assertions.*;
-class CostOfLivingTest {
-
+class loadProductHistoryTest {
     @Test
     void nullProductStream() {
         CostOfLiving testCost = new CostOfLiving();
@@ -204,7 +203,7 @@ class CostOfLivingTest {
                 "2024/01/02\ta\t1 kg\t1.75\n"+
                 "2024/01/02\tb\t1 kg\t1.80\n"+
                 "2024/01/03\ta\t1 kg\t1.85\n"+
-                "2024/01/03\tb\t1 kg\t2.00";
+        "2024/01/03\tb\t1 kg\t2.00";
         assertEquals( 6,  testCost.loadProductHistory( new BufferedReader( new StringReader( testData )) ),
                 "chronological order" );
     }
